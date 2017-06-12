@@ -1,0 +1,2701 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (X11; U; SunOS 5.8 sun4u) [Netscape]">
+   <title>software_mod_history</title>
+</head>
+<body text="#000000" bgcolor="#FFFFFF" link="#3366FF" vlink="#3366FF" alink="#FF0000">
+
+<center>
+<h1>
+software modification history</h1></center>
+
+<center>
+<h4>
+dec,2001</h4></center>
+
+<h4>
+modification dates for software routines.</h4>
+&nbsp;
+<table BORDER WIDTH="100%" NOSAVE >
+<caption>&nbsp;
+<br><tbody></tbody><tbody>
+<br></tbody></caption>
+
+<tr NOSAVE>
+<td NOSAVE>
+<center>date</center>
+</td>
+
+<td>stat</td>
+
+<td>name</td>
+
+<td NOSAVE>location</td>
+
+<td>description</td>
+</tr>
+
+<tr>
+<td>27oct04</td>
+
+<td>mod</td>
+
+<td>was.h
+<br><a href="http://www.naic.edu/~phil/wasdoc.html#WASFTOCHDR - CONVERT FITS HDR TO COR HEADER">wasftochdr</a></td>
+
+<td>was2</td>
+
+<td>added about 20 entries to the .hf portion of the header (fits info).
+modified wasftochdr to move the info over. The new things were recently
+added to the fits header (crval2a ..etc).</td>
+</tr>
+
+<tr>
+<td>27oct04</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/~phil/cordoc.html#CORHSTATE - DECODE STATUS WORDS FOR CORRELATOR HEADER">corhstate</a></td>
+
+<td>cor</td>
+
+<td>decode the status word in the cor hdr into a structure so you can see
+what is set. (works for interim cor data. wapp/was data does not load this
+state variable).</td>
+</tr>
+
+<tr>
+<td>27cot04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/cordoc.html#CORPLOT - PLOT THE CORRELATOR DATA.">corplot</a></td>
+
+<td>was2,cor</td>
+
+<td>the 20oct04 color mod broke psfile output for corplot. I fixed it today.</td>
+</tr>
+
+<tr>
+<td>26oct04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/wasdoc.html#ARCH_GETALFARADEC - GET ALFA RA/DEC FROM THE ARCHIVE.">arch_getalfaradec</a></td>
+
+<td>was2</td>
+
+<td>typo&nbsp; keyword procname. startf should have been smartf (thanks
+jagadheep)</td>
+</tr>
+
+<tr>
+<td>22oct04</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/~phil/gendoc.html#EXPLAIN - LIST DOCUMENTATION">explain</a></td>
+
+<td>gen,doc</td>
+
+<td>explain routine will list routine documentation in the idl window.
+Also provided a topics section that give 1 line summaries.</td>
+</tr>
+
+<tr>
+<td>22oct04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/wasdoc.html#ARCH_GETALFARADEC - GET ALFA RA/DEC FROM THE ARCHIVE.">arch_getalfaradec</a></td>
+
+<td>was2</td>
+
+<td>It was aborting if plotit keyword was not supplied. I was not first
+checking for the existance of the keyword before acessing it.</td>
+</tr>
+
+<tr>
+<td>21oct04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/wasdoc.html#WASALFACMPRADEC - COMPUTE RA/DEC FOR ALFA USING WASDATA">wasalfacmpradec</a>
+<br>arch_getalfaradec</td>
+
+<td>was2</td>
+
+<td>was not interpolating correctly between encoder time and data sample
+time when ra crossed 0Hrs. Fixed by interpolating az,za rather than ra/dec
+(thanks to arun for the suggestion).&nbsp; This also affected&nbsp; arch_getalfaradec.</td>
+</tr>
+
+<tr>
+<td>20oct04</td>
+
+<td>mod</td>
+
+<td>modified most routines that used the plot command and color= keyword.</td>
+
+<td>gen,Cor2,was2
+<br>and many more</td>
+
+<td>I got tired of the colors not coming out right on the linux true color
+displays. I went thru and modified the color= keyword to work correctly
+with pseudo color or true color in most routines.</td>
+</tr>
+
+<tr>
+<td>11oct04</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/~phil/gendoc.html#ALLMKDOC - CREATE ALL HTML DOCUMENTATION.">allmkdoc</a></td>
+
+<td>gen</td>
+
+<td>routine to create all of the html doc files in the directory specified
+by aodefdir(/doc).</td>
+</tr>
+
+<tr>
+<td>11oct04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/gendoc.html#AODEFDIR - AO BASE DIRECTORY FOR IDL ROUTINES.">aodefdir</a></td>
+
+<td>gen</td>
+
+<td>added /doc ,/url keywords to return directory/url&nbsp; for local html
+documentation.</td>
+</tr>
+
+<tr>
+<td>29sep04</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/~phil/wappdoc.html#WAPPFILESIZEI - GET FILE/ RECORD SIZE INFO">wappfilesizei</a></td>
+
+<td>wapp</td>
+
+<td>return file size info (bytes file, bytes data, samples in file) for
+a wapp pulsar datafile.</td>
+</tr>
+
+<tr>
+<td>27sep04</td>
+
+<td>mod</td>
+
+<td>was.h</td>
+
+<td>was2</td>
+
+<td>b.hf.rate_cs was inadvertantly defined as float instead of string.
+Changed it back to string today.</td>
+</tr>
+
+<tr>
+<td>23sep04</td>
+
+<td>mod</td>
+
+<td>washdr
+<br>was.h
+<br>wasopen</td>
+
+<td>was2</td>
+
+<td>The fits header changed on 16sep04. Many new entries were added (mainly
+related to positions and alfa)and a few entries were removed (point_off_az/za,
+rate_time)
+<br>I did not modify b.hf (yet). the raJ/decJ&nbsp; is still coming from
+the central beam (for all pixels of alfa).</td>
+</tr>
+
+<tr>
+<td>06sep04</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/~phil/wasdoc.html#ARCH_GETALFARADEC - GET ALFA RA/DEC FROM THE ARCHIVE.">arch_getalfaradec</a></td>
+
+<td>was2</td>
+
+<td>search the was archive and return the alfa beam positions in ra/dec
+J2000 for a user specified set of scans.</td>
+</tr>
+
+<tr>
+<td>06sep04</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/wasdoc.html#WASALFACMPRADEC - COMPUTE RA/DEC FOR ALFA USING WASDATA">wasalfacmpradec</a></td>
+
+<td>was2</td>
+
+<td>compute alfabeam positions from&nbsp; az,za and timestamp.</td>
+</tr>
+
+<tr>
+<td>06sep04</td>
+
+<td>mod</td>
+
+<td>corget,corinpscan, <a href="http://www.naic.edu/~phil/wasdoc.html#ARCH_GETDATA - GET COR DATA USING THE ARCHIVE TBL ARRAYS">arch_getdata</a></td>
+
+<td>was2</td>
+
+<td>added /hdronly keyword. Will return data structures with b.b1.h and
+b.b1.hf and without the data (b.b1.d).</td>
+</tr>
+
+<tr>
+<td>05sep04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/wasdoc.html#WASOPEN - OPEN A WAS FITS FILES FOR I/O">wasopen</a></td>
+
+<td>was2</td>
+
+<td>put some more validity checks in so that wasopen would not abort (as
+often on fits files with incorrect header info .. eg out of order records).</td>
+</tr>
+
+<tr>
+<td>27aug04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/pntdoc.html#ALFABMPOS - COMPUTE ALFA BEAM POSITIONS FROM AZ,ZA,JD BEAM 0.">alfabmpos</a></td>
+
+<td>gen/pnt</td>
+
+<td>The offsets were being included backwards. The sign was flipped on
+24aug04. This flipping also flipped the sign of the rotation angle (which
+was wrong). The rotation angle sign has been fixed. It should now agree
+with value input on the gui.</td>
+</tr>
+
+<tr>
+<td>22aug04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/cordoc.html#ARCH_GETDATA - GET COR DATA USING THE ARCHIVE TBL ARRAYS">arch_getdata</a></td>
+
+<td>was2</td>
+
+<td>implemented for was data.</td>
+</tr>
+
+<tr>
+<td>22aug04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/cordoc.html#ARCH_GETTBL - INPUT TABLE OF SCANS FROM COR ARCHIVE">arch_gettbl</a></td>
+
+<td>was2</td>
+
+<td>archive now works for was data.&nbsp; Some functionality has not yet
+been implemented (record type selection).</td>
+</tr>
+
+<tr>
+<td>22aug04</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/~phil/cordoc.html#ARCH_OPENFILE - OPEN A FILE USING ARCHIVE ARRAYS">arch_openfile</a></td>
+
+<td>cor2</td>
+
+<td>open a file given the archive arrays slar, slfilear, and an index into
+slar. Works for correlator and was files.</td>
+</tr>
+
+<tr>
+<td>20aug04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/wasdoc.html#WASGET - READ A GROUP  OF WAS DATA RECORDS.">wasget</a>/corget</td>
+
+<td>was2</td>
+
+<td>changed wasget to return the correct order of polA,polB, boards&nbsp;
+independant of the order in the file. It was assuming a particular data
+order in the file (and this order was modified on 20aug04).</td>
+</tr>
+
+<tr>
+<td>20aug04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/wasdoc.html#WASPWR - RETURN POWER INFORMATION FOR A NUMBER OF RECS">waspwr</a>/corpwr</td>
+
+<td>was2</td>
+
+<td>waspwr (called via corpwr) was returning the total power in the wrong
+order (ordered by how it was stored in the fits file rather than brd1(pola,polb),
+brd2(polA,polb) etc.. This was not a problem in the was routines.</td>
+</tr>
+
+<tr>
+<td>17aug04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/pntdoc.html#ALFABMPOS - COMPUTE ALFA BEAM POSITIONS FROM AZ,ZA,JD BEAM 0.">alfabmpos</a></td>
+
+<td>gen/pnt</td>
+
+<td>had forgotten to&nbsp; include rotangl=&nbsp; parameter on&nbsp; the
+function definition line.</td>
+</tr>
+
+<tr>
+<td>11aug04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/cordoc.html#CORGET - INPUT NEXT CORRELATOR RECORD FROM DISC">corget</a>
+<br><a href="http://www.naic.edu/~phil/cordoc.html#CORFRQ - COMPUTE THE FREQ/VEL ARRAY FOR A SPECTRA">corfrq</a></td>
+
+<td>cor2</td>
+
+<td>Both updated to use corhfipppedh()</td>
+</tr>
+
+<tr>
+<td>11aug04</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/~phil/cordoc.html#CORHFLIPPEDH - CHECK IF CURRENT DATA IS FLIPPED IN FREQ.">corhflippedh</a></td>
+
+<td>cor2</td>
+
+<td>replace routine corhflipped with corhflippedh. corhflipped was using
+the bit in the hdr that said if this spectrum was flipped or not. It was
+occasionally being set incorrectly for 1 ghz bandwidths (when lo was above
+1500 but it was a low side lo,&nbsp; or lo was below 1500 and it was being
+used as a hi side lo). The fix is to ignore the header bit and compute
+the flip from the rf, IF/mixers used, and the if2 filters.This impacted
+2 projects in the last 3 years. Those people have been contacted with a
+list of the scans affected. People should probably redownload the code
+to get these fixes.&nbsp;</td>
+</tr>
+
+<tr>
+<td>10aug04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/gendoc.html#FITNGAUSS - FIT N GAUSSIANS">fitngauss</a>
+<br><a href="http://www.naic.edu/~phil/gendoc.html#FITNGAUSSNC - FIT N GAUSSIANS (NO COMA)">fitngaussnc</a></td>
+
+<td>gen</td>
+
+<td>sigmacoef was being returned incorrectly.. sqrt extendened too far.</td>
+</tr>
+
+<tr>
+<td>09aug04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/wasdoc.html#WASFTOCHDR - CONVERT FITS HDR TO COR HEADER">wasftochdr</a></td>
+
+<td>was2</td>
+
+<td>added h.pnt.r.raJcumRd, h.pnt.r.decJcumRd... Requested ra,dec J2000
+backcomputed from az,za.</td>
+</tr>
+
+<tr>
+<td>07aug04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/gendoc.html#FITNGAUSS - FIT N GAUSSIANS">fitngauss</a>
+<br><a href="http://www.naic.edu/~phil/gendoc.html#FITNGAUSSNC - FIT N GAUSSIANS (NO COMA)">fitngaussnc</a></td>
+
+<td>gen</td>
+
+<td>The routine was using the length of the coeffinit array to determine
+the number of gaussians to fit.&nbsp; Fix it so it always uses the ngauss
+parameter.</td>
+</tr>
+
+<tr>
+<td>04aug04</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/~phil/pntdoc.html#ALFABMPOS - COMPUTE ALFA BEAM POSITIONS FROM AZ,ZA,JD BEAM 0.">alfabmpos</a></td>
+
+<td>gen/pnt</td>
+
+<td>compute alfa beam positions (ra,dec J2000)&nbsp; given az,za,JD of
+central pixel).</td>
+</tr>
+
+<tr>
+<td>04aug04</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/~phil/pntdoc.html">aoPntroutines</a>
+<br>data</td>
+
+<td>gen/pnt
+<br>data/pnt</td>
+
+<td>The pointing models are now included in the downloadable distribution
+(see aodefdir()/data/pnt). This lets you run the&nbsp; point routines at
+your home institution.</td>
+</tr>
+
+<tr>
+<td>31jul04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/wasdoc.html#WASGET - READ A GROUP  OF WAS DATA RECORDS.">wasget</a></td>
+
+<td>was2</td>
+
+<td>if two boards in use, wasget bombed (var hf was entered as fh). fixed..</td>
+</tr>
+
+<tr>
+<td>26jul04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/cormapdoc.html#CORMAPINP  - INPUT A CORRELATOR MAP.">cormapinp</a></td>
+
+<td>cormap</td>
+
+<td>Added rcvr number check for each scan. Some observers were switching
+between rcvrs in the middle of a map</td>
+</tr>
+
+<tr>
+<td>24jul04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/wappdoc.html#WAPPMONIMGP - MONITOR WAPP FILE VIA IMAGES">wappmonimgp</a></td>
+
+<td>wapp</td>
+
+<td>when skipping to next file, reset position offset to 0.</td>
+</tr>
+
+<tr>
+<td>22jul04</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/~phil/gendoc.html#FITNGAUSSNC - FIT N GAUSSIANS (NO COMA)">fitngaussnc</a></td>
+
+<td>gen</td>
+
+<td>fit&nbsp; N&nbsp; (1 to 3) gaussians without including the coma parameter.</td>
+</tr>
+
+<tr>
+<td>18jul04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/wasdoc.html#WASFTOCHDR - CONVERT FITS HDR TO COR HEADER">wasftochdr</a></td>
+
+<td>was2</td>
+
+<td>fits hdr locations beam_offaz,beam_offza&nbsp; added.
+<br>h.iflo.if2.st4.mixerCFr added</td>
+</tr>
+
+<tr>
+<td>14jul04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/cordoc.html#ARCH_GETMAP - INPUT A MAP FROM THE ARCHIVE">arch_getmap</a></td>
+
+<td>cor</td>
+
+<td>fix so it finds non contiguous maps in file</td>
+</tr>
+
+<tr>
+<td>13jul04</td>
+
+<td>was2</td>
+
+<td>wasopen,wasftochdr</td>
+
+<td>was2</td>
+
+<td>put in some checks for incomplete rows in a record.</td>
+</tr>
+
+<tr>
+<td>12jul04</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/~phil/wasdoc.html">was2</a></td>
+
+<td>was2</td>
+
+<td>added wapp spectral line routines for fits data with all of the wapp
+boards in 1 file.</td>
+</tr>
+
+<tr>
+<td>08jul04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/cormapdoc.html#CORMAPBC   - BAND PASS CORRECT A MAP 1 STRIP AT A TIME">cormapbc</a></td>
+
+<td>cormap</td>
+
+<td>add median,robust average to tsys removal options (tsys=4,tsys=5).</td>
+</tr>
+
+<tr>
+<td>08jul04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/cordoc.html#CORPLOTRL - PLOT CORRELATOR DATA FLAGGING RECOMB LINES.">corplotrl</a></td>
+
+<td>cor</td>
+
+<td>add pol=,extitle= keywords</td>
+</tr>
+
+<tr>
+<td>07jul04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/cordoc.html#CORBLAUTO - AUTOMATIC BASELINING OF A CORRELATOR DATA SET">corblauto</a></td>
+
+<td>cor</td>
+
+<td>make colors work with truecolor display(pc).</td>
+</tr>
+
+<tr>
+<td>07jul04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/cordoc.html#CORIMGONOFF - MAKE IMAGE OF AN ON OFF PAIR">corimgonoff</a></td>
+
+<td>cor</td>
+
+<td>make colors work with truecolor displays(pc).</td>
+</tr>
+
+<tr>
+<td>07jul04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/cordoc.html#CORPOSONOFF - PROCESS A POSITION SWITCH SCAN">corposonoff</a></td>
+
+<td>cor</td>
+
+<td>if /sclJy and individual bon,boff recs requested, return them in Jy.
+They were being returned in Kelvins.</td>
+</tr>
+
+<tr>
+<td>04jul04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/cordoc.html#CORPLOT - PLOT THE CORRELATOR DATA.">corplot</a></td>
+
+<td>cor</td>
+
+<td>changed title positioning so it works with different size windows.</td>
+</tr>
+
+<tr>
+<td>03jul04</td>
+
+<td>mod</td>
+
+<td>gain curves</td>
+
+<td>data</td>
+
+<td>sbhi (3-4) gain curve . data feb04-jun04</td>
+</tr>
+
+<tr>
+<td>28jun04</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/~phil/cordoc.html#CORCALCMP -  GIVEN CALON,OFF BUFFERS, COMPUTE SCALE TO KELVINS">corcalcmp</a></td>
+
+<td>cor</td>
+
+<td>compute corCnts to Kelvins using cal records.</td>
+</tr>
+
+<tr>
+<td>25jun04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/cordoc.html#CORSTAT - COMPUTE MEAN,RMS BY SBC">corstat</a></td>
+
+<td>cor</td>
+
+<td>increased sbc dimensions in corstat from 4 to 8 for wapps.</td>
+</tr>
+
+<tr>
+<td>22jun04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/cordoc.html#CORPWR - RETURN POWER INFORMATION FOR A NUMBER OF RECS">corpwr</a></td>
+
+<td>cor</td>
+
+<td>increased dimension p.pwr[2,4] to p.pwr[2,8] for wapps.</td>
+</tr>
+
+<tr>
+<td>17jun04</td>
+
+<td>mod</td>
+
+<td>xbcal gt 10ghz</td>
+
+<td>data</td>
+
+<td>added high cal values for above 10.2 Ghz.</td>
+</tr>
+
+<tr>
+<td>28may04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/cordoc.html#CORPOSONOFF - PROCESS A POSITION SWITCH SCAN">corposonooff</a></td>
+
+<td>cor</td>
+
+<td>added median filter option</td>
+</tr>
+
+<tr>
+<td>24may04</td>
+
+<td>mod</td>
+
+<td>fluxsrc.dat</td>
+
+<td>data</td>
+
+<td>included J2000 names for all the B1950 srcs.</td>
+</tr>
+
+<tr>
+<td>14may04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/gendoc.html#ARRPLTAZZAERR -  ARROW PLOT OF AZERR,ZAERR VS AZ,ZA">arrpltazzaerr</a></td>
+
+<td>gen</td>
+
+<td>moved arrow plot az,za errors vs&nbsp; az/za to the generic directory
+(was in&nbsp; pntmod).</td>
+</tr>
+
+<tr>
+<td>22apr04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/wappdoc.html#WAPPGET - INPUT WAPP DATA">wappget</a></td>
+
+<td>wapp</td>
+
+<td>added 3 lvl correction&nbsp; option</td>
+</tr>
+
+<tr>
+<td>21apr04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/gendoc.html#AODEFDIR - AO BASE DIRECTORY FOR IDL ROUTINES.">aodefdir</a></td>
+
+<td>gen</td>
+
+<td>all files moved from /home/phil/idl to
+<br>/pkg/rsi/local/libao/phil.. aodefdir() was updated</td>
+</tr>
+
+<tr>
+<td>07apr04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/cormapdoc.html#CORMAPINP  - INPUT A CORRELATOR MAP.">cormapinp</a></td>
+
+<td>cormap</td>
+
+<td>bug in case statement caused cormapdec patterns to fail in processing.</td>
+</tr>
+
+<tr>
+<td>27mar04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/xband/gainMar03/gainCurvesMar03.html">gain
+curves</a></td>
+
+<td>data</td>
+
+<td>xband gain curves for mar03 thru sep03.</td>
+</tr>
+
+<tr>
+<td>16mar04</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/~phil/gendoc.html#IFLOHSTAT - DECODE STATUS WORDS FOR IFLO">iflohstat</a></td>
+
+<td>gen</td>
+
+<td>decode status bitmaps in the iflo header.</td>
+</tr>
+
+<tr>
+<td>13mar03</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/cordoc.html#CORCALIB - INTENSITY CALIBRATE A SINGLE SPECTRA">corcalib</a></td>
+
+<td>cor</td>
+
+<td>1 sbc/board pol b was using polA cal</td>
+</tr>
+
+<tr>
+<td>10mar04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/gendoc.html#FLUXSRCLIST - RETURN LIST OF SOURCE NAMES IN FLUX FILE">fluxsrclist</a></td>
+
+<td>gen</td>
+
+<td>added srclist keyword</td>
+</tr>
+
+<tr>
+<td>09mar04</td>
+
+<td>mod</td>
+
+<td>gain curves</td>
+
+<td>data</td>
+
+<td>updated gain curves for sbn, cband</td>
+</tr>
+
+<tr>
+<td>07mar04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/cordoc.html#ARCH_GETMAPINFO - GET INFO ON MAPS FROM THE ARCHIVE">arch_getmapinfo</a></td>
+
+<td>cor</td>
+
+<td>added keywords: useslar,slar,slfilear</td>
+</tr>
+
+<tr>
+<td>07mar04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/cordoc.html#ARCH_GETMAP - INPUT A MAP FROM THE ARCHIVE">arch_getmap</a></td>
+
+<td>cor</td>
+
+<td>added keywords:useslar,slar,slfilear</td>
+</tr>
+
+<tr>
+<td>07mar04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/cormapdoc.html#CORMAPINPLIST  - INPUT A MAP FROM A LIST OF FILES.">cormapinplist</a></td>
+
+<td>cormap</td>
+
+<td>added keyword /useslar so you can use a personal archive file,
+<br>fixed bug cals at start of cordrift (it had not been updated for this
+option).</td>
+</tr>
+
+<tr>
+<td>04mar04</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/~phil/gendoc.html#CORBYCHAN - AUTO/XCORRELATE DYNAMIC SPC BY CHAN.">corbychn</a></td>
+
+<td>gen</td>
+
+<td>correlate channels of dynamic spectra.</td>
+</tr>
+
+<tr>
+<td>29feb04</td>
+
+<td>new</td>
+
+<td>gain curve</td>
+
+<td>data</td>
+
+<td>added gain curve for cband high&nbsp; (6-8 Ghz)</td>
+</tr>
+
+<tr>
+<td>19feb04</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/~phil/gendoc.html#BPCMPBYCHAN  - COMPUTE A BAND PASS FROM SET OF SPECTRA">bpcmpbychan</a></td>
+
+<td>gen</td>
+
+<td>compute bandpass for a set of spectra by channel.</td>
+</tr>
+
+<tr>
+<td>10feb04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/cordoc.html#CORRECINFO - PRINT RECORD INFO">correcinfo</a></td>
+
+<td>cor</td>
+
+<td>add fdout keyword</td>
+</tr>
+
+<tr>
+<td>07feb04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/cormapdoc.html#CORMAPBC   - BAND PASS CORRECT A MAP 1 STRIP AT A TIME">cormapbc</a></td>
+
+<td>cormap</td>
+
+<td>1. if bpc by chan, compare fit to all samples, not just the last set
+of good samples.
+<br>2.&nbsp; bpc by chan.&nbsp; Had left out the abs() on the compare.</td>
+</tr>
+
+<tr>
+<td>07feb04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/cormapdoc.html#CORMAPINP  - INPUT A CORRELATOR MAP.">cormapinp</a></td>
+
+<td>cormap</td>
+
+<td>was not reading in cormapdec data. fixed it.</td>
+</tr>
+
+<tr>
+<td>03feb04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/cordoc.html#CORMONALL - MONITOR CORRELATOR DATA, BANDPASS,RMS,IMG">cormonall</a></td>
+
+<td>cor</td>
+
+<td>added imgmedian keyword (when flattening image)</td>
+</tr>
+
+<tr>
+<td>02feb04</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/~phil/wasdoc.html#WASPWR - RETURN POWER INFORMATION FOR A NUMBER OF RECS">waspwr</a></td>
+
+<td>was</td>
+
+<td>implements corpwr() for was data.</td>
+</tr>
+
+<tr>
+<td>28jan04</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/~phil/gendoc.html#MEANROB - ROBUST MEAN FOR 1D ARRAY">meanrob</a></td>
+
+<td>gen</td>
+
+<td>compute robust mean using rms.</td>
+</tr>
+
+<tr>
+<td>21jan04</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/~phil/wasdoc.html">was routines</a></td>
+
+<td>was</td>
+
+<td>routines to read wapp spectral line data.</td>
+</tr>
+
+<tr>
+<td>12jan04</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/~phil/cordoc.html#ARCH_GETMAPINFO - GET INFO ON MAPS FROM THE ARCHIVE">arch_getmapinfo</a></td>
+
+<td>cor</td>
+
+<td>return map summary info from the&nbsp; archive.</td>
+</tr>
+
+<tr>
+<td>11jan04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/wappdoc.html#WAPPGETFILEINFO - GET THE LIST OF FILENAMES FROM THE LOG FILE">wappgetfileinfo</a></td>
+
+<td>wapp</td>
+
+<td>fix searching of logfiles. Now uses juldat.seqNum in filename</td>
+</tr>
+
+<tr>
+<td>07jan04</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/cormapdoc.html#CORMAPBC   - BAND PASS CORRECT A MAP 1 STRIP AT A TIME">cormapbc</a></td>
+
+<td>cormap</td>
+
+<td>added bandpass correction by chan. Changed coding of numbpedge to include
+this. allstrip keyword now numbpedg=-2.</td>
+</tr>
+
+<tr>
+<td>24dec03</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/~phil/cormapdoc.html#CORMAPINP  - INPUT A CORRELATOR MAP.">cormapinp</a></td>
+
+<td>cormap</td>
+
+<td>new keyword to return raw cal recs.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>24dec03</td>
+
+<td VALIGN=TOP>mod</td>
+
+<td VALIGN=TOP><a href="http://www.naic.edu/~phil/cordoc.html#CORPLOT - PLOT THE CORRELATOR DATA.">corplot</a></td>
+
+<td VALIGN=TOP>cor</td>
+
+<td VALIGN=TOP>now works with n dimensional arrays.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>22dec03</td>
+
+<td VALIGN=TOP>mod</td>
+
+<td VALIGN=TOP><a href="http://www.naic.edu/~phil/atmdoc.html#ATMGET - INPUT 1 OR MORE ATM RECORDS">atmget</a></td>
+
+<td VALIGN=TOP>atm</td>
+
+<td VALIGN=TOP>added rectypes for rawdat program data.</td>
+</tr>
+
+<tr>
+<td VALIGN=TOP>22dec03</td>
+
+<td VALIGN=TOP>new</td>
+
+<td VALIGN=TOP><a href="http://www.naic.edu/%7Ephil/atmdoc.html#ATMPWRCMP%20-%20DECODE/COMPUTE%20POWER%20PROFILE">atmpwrcmp</a></td>
+
+<td VALIGN=TOP>atm</td>
+
+<td VALIGN=TOP>compute power profile from rawdat data.</td>
+</tr>
+
+<tr>
+<td>26nov03</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/wappdoc.html#WAPPFRQ%20-%20RETURN%20FREQ%20ARRAY%20FOR%20WAPP%20DATA.">wappfrq</a></td>
+
+<td>wapp</td>
+
+<td>return&nbsp; freq array for wapp data.</td>
+</tr>
+
+<tr>
+<td>25nov03</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/gendoc.html#MEDIANBYCHAN%20-%20%20MEDIAN%202D%20ARRAY%20BY%20CHAN.">medianbychan</a></td>
+
+<td>gen</td>
+
+<td>compute median by chan for 2d array.</td>
+</tr>
+
+<tr>
+<td>25nov03</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/gendoc.html#MASKBYRMS%20-%20CREATE%20MASK%20USING%20RMS%20OF%20FIT%20RESIDUALS.">maskbyrms</a></td>
+
+<td>gen</td>
+
+<td>create mask using rms of fit residuals.</td>
+</tr>
+
+<tr>
+<td>02nov03</td>
+
+<td>mod</td>
+
+<td>lbw gaincurve</td>
+
+<td>idl/data</td>
+
+<td>data 03mar03 thru sep03</td>
+</tr>
+
+<tr>
+<td>15oct03</td>
+
+<td>mod</td>
+
+<td>xband&nbsp; calvalues</td>
+
+<td>idl/data</td>
+
+<td>installed new xband cal values</td>
+</tr>
+
+<tr>
+<td>04oct03</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/gendoc.html#SMOFRQDM_1D%20-%20FREQ%20DOMAIN%20SMOOTHING%20%281D%29">smofrqdm_1d</a></td>
+
+<td>gen</td>
+
+<td>1d smoothing in the frequency domain.</td>
+</tr>
+
+<tr>
+<td>02sep03</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#ARCH_GETMAP%20-%20INPUT%20A%20MAP%20FROM%20THE%20ARCHIVE">arch_getmap</a></td>
+
+<td>cor</td>
+
+<td>input a cormap from the data archive.</td>
+</tr>
+
+<tr>
+<td>30aug03</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/gendoc.html#CHEBFIT%20-%20CHEBYSHEV%20POLYNOMIAL%20FIT%20TO%20DATA">chebfit</a></td>
+
+<td>gen</td>
+
+<td>chebyshev polynomial&nbsp; fitting routine.</td>
+</tr>
+
+<tr>
+<td>29aug03</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORAVG%20-%20AVERAGE%20CORRELATOR%20DATA.">coravg</a></td>
+
+<td>cor</td>
+
+<td>added /onlypol option (avg pols but not recs)</td>
+</tr>
+
+<tr>
+<td>22aug03</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORBLAUTO%20-%20AUTOMATIC%20BASELINING%20OF%20A%20CORRELATOR%20DATA%20SET">corblauto</a></td>
+
+<td>cor</td>
+
+<td>automatically generate a mask and then baseline a cor structure.</td>
+</tr>
+
+<tr>
+<td>19aug03</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/gendoc.html#PWRLAWDIST%20-%20GENERATE%20A%20POWER%20LAW%20DISTRIBUTION.">pwrlawdist</a></td>
+
+<td>gen</td>
+
+<td>generate a power law distribution.</td>
+</tr>
+
+<tr>
+<td>15aug03</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORRECINFO%20-%20PRINT%20RECORD%20INFO">correcinfo</a></td>
+
+<td>cor</td>
+
+<td>added inphdr keyword.</td>
+</tr>
+
+<tr>
+<td>08aug03</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/wappdoc.html#WAPPMONIMG%20-%20MONITOR%20WAPP%20FILE%20VIA%20IMAGES">wappmonimg</a></td>
+
+<td>wapp</td>
+
+<td>fixed bug&nbsp; in positioning in menu.&nbsp; Loads lkup tbl by def.</td>
+</tr>
+
+<tr>
+<td>05aug03</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORPLOTRL%20-%20PLOT%20CORRELATOR%20DATA%20FLAGGING%20RECOMB%20LINES.">corplotrl</a></td>
+
+<td>cor</td>
+
+<td>plot cor data flagging recombination lines.</td>
+</tr>
+
+<tr>
+<td>05aug03</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/gendoc.html#RECOMBSEARCH%20-%20SEARCH%20%20FOR%20RECOMBINATION%20LINES%20WITHIN%20A%20FREQ%20RANGE.">recombsearch</a></td>
+
+<td>gen</td>
+
+<td>search for recombination lines in a freq range.</td>
+</tr>
+
+<tr>
+<td>03aug03&nbsp;
+<p>&nbsp;</td>
+
+<td>mod&nbsp;
+<p>&nbsp;</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORBL%20-%20BASELINE%20A%20CORRELATOR%20DATA%20SET">corbl</a>
+<p>&nbsp;</td>
+
+<td>cor&nbsp;
+<p>&nbsp;</td>
+
+<td>mask definition window used 0..nlag-1 rather than freq for the x axis
+of the plot. If&nbsp; h min max (horizontal plot scale )&nbsp; was set,
+then you couldn't see the data. fixed (note: this only affected the plotting,
+not the fitting).</td>
+</tr>
+
+<tr>
+<td>02aug03</td>
+
+<td>mod</td>
+
+<td>mktar</td>
+
+<td>xx</td>
+
+<td>Downloading idl software now includes atm routines.</td>
+</tr>
+
+<tr>
+<td>02aug03</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORPOSONOFF%20-%20PROCESS%20A%20POSITION%20SWITCH%20SCAN">corposonoff</a></td>
+
+<td>cor</td>
+
+<td>maxrecs keyword was not included. limit was 300 recs. fixed it..</td>
+</tr>
+
+<tr>
+<td>02aug03</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORPOSONOFFM%20-%20PROCESS%20A%20ON/OFF%20SCAN%20USING%20A%20MASK">corposonoffm</a></td>
+
+<td>cor</td>
+
+<td>added maxrecs keyword.</td>
+</tr>
+
+<tr>
+<td>26jul03</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/atmdoc.html#PLASMACUTOFF%20-%20PROCESS%20SINGLE%20PULSE%20PLASMA%20CUTTOFF%20DATA">plasmacutoff</a></td>
+
+<td>atm</td>
+
+<td>process single pulse plasma line data</td>
+</tr>
+
+<tr>
+<td>26jul03</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/atmdoc.html#METMON%20-%20MONITOR%20METEOR%20DATA">metmon</a></td>
+
+<td>atm</td>
+
+<td>monitor meteor data.</td>
+</tr>
+
+<tr>
+<td>20jul03</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/xband/calmeasurements.html#06jun03%20xband%20cals">xband
+cals</a></td>
+
+<td>idl/data</td>
+
+<td>installed&nbsp; new xband cal values</td>
+</tr>
+
+<tr>
+<td>12jul03</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORHAN%20-%20HANNING%20SMOOTH%20CORRELATOR%20DATA.">corhan</a></td>
+
+<td>cor</td>
+
+<td>now works with an array&nbsp; of corget structures.</td>
+</tr>
+
+<tr>
+<td>12jul03</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORRECINFO%20-%20PRINT%20RECORD%20INFO">correcinfo</a></td>
+
+<td>cor</td>
+
+<td>added info for cordrift maps</td>
+</tr>
+
+<tr>
+<td>07jul03</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/atmdoc.html#ATMGET%20-%20INPUT%201%20OR%20MORE%20ATM%20RECORDS">atmget</a></td>
+
+<td>idl/atm</td>
+
+<td>read aeronomy data files.</td>
+</tr>
+
+<tr>
+<td>25jun03</td>
+
+<td>mod</td>
+
+<td>lbn gain curves</td>
+
+<td>idl/data</td>
+
+<td>recomputed lbn gain curves 01sep01 thru 20aug02.</td>
+</tr>
+
+<tr>
+<td>19jun03</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cormapdoc.html#CMTOTPWR%20%20%20-%20COMPUTE%20TOTAL%20POWER%20FOR%20A%20MAP">cmtotpwr</a></td>
+
+<td>cor/coramp</td>
+
+<td>allow masks when computing totpwr</td>
+</tr>
+
+<tr>
+<td>14jun03</td>
+
+<td>new</td>
+
+<td>wappget</td>
+
+<td>wapp</td>
+
+<td>get wapp pulsar data</td>
+</tr>
+
+<tr>
+<td>14jun03</td>
+
+<td>new</td>
+
+<td>wappgethdr</td>
+
+<td>wapp</td>
+
+<td>get wapp header</td>
+</tr>
+
+<tr>
+<td>14jun03</td>
+
+<td>new</td>
+
+<td>wappgetfileinfo</td>
+
+<td>wapp</td>
+
+<td>scan logfile, get fileinfo for all files used.</td>
+</tr>
+
+<tr>
+<td>14jun03</td>
+
+<td>new</td>
+
+<td>wappmonimg</td>
+
+<td>wapp</td>
+
+<td>monitor wappfiles making images.</td>
+</tr>
+
+<tr>
+<td>14jun03</td>
+
+<td>mod</td>
+
+<td>lbw gaincurve</td>
+
+<td>idl/data</td>
+
+<td>lbw gain curve of 21nov02 (after lbw horn focus change) did not have
+the date field. Users were getting the gain curve from before the horn
+move (pre 21nov02). Fixed 14jun03.</td>
+</tr>
+
+<tr>
+<td>14jun03</td>
+
+<td>mod</td>
+
+<td>lbw cals</td>
+
+<td>idl/data</td>
+
+<td>lbw cals of mar03 had date field reversed (48 2003 instead of 2003
+48). Problem occured 31mar03 to 14jun03. This would give feb03 cals values
+even if data was before feb03. Fixed 14jun03.</td>
+</tr>
+
+<tr>
+<td>07jun03</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/gendoc.html#FLUXSRCLIST%20-%20RETURN%20LIST%20OF%20SOURCE%20NAMES%20IN%20FLUX%20FILE">fluxsrclist</a></td>
+
+<td>gen</td>
+
+<td>added size,bnames options for listing sources</td>
+</tr>
+
+<tr>
+<td>04jun03</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/gendoc.html#RECOMBFREQ%20-%20COMPUTE%20RECOMBINATION%20LINE%20FREQ%20FOR%20ATOMS">recombfreq</a></td>
+
+<td>gen</td>
+
+<td>compute recombination line freq for hydrogen like atoms.</td>
+</tr>
+
+<tr>
+<td>01jun03</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cormapdoc.html#CORMAPINP%20%20-%20INPUT%20A%20CORRELATOR%20MAP.">cormapinp</a></td>
+
+<td>cor/cormap</td>
+
+<td>idl ge 5.5 treat embedded strucutures as arrays of 1. put in version
+checks to make it work.</td>
+</tr>
+
+<tr>
+<td>18may03</td>
+
+<td>mod</td>
+
+<td>cband cals</td>
+
+<td>idl/data</td>
+
+<td>cband calvalues for new diodes.</td>
+</tr>
+
+<tr>
+<td>14may03</td>
+
+<td>mod</td>
+
+<td>sbh 3-4ghz cals</td>
+
+<td>idl/data</td>
+
+<td>remeasured sbh cals . they were drifting.</td>
+</tr>
+
+<tr>
+<td>09may03</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORSAVBYSRC%20-%20CREATE%20ARRAYS%20BY%20SOURCE.">corsavbysrc</a></td>
+
+<td>cor</td>
+
+<td>take pfposonoff() and order by source.</td>
+</tr>
+
+<tr>
+<td>30apr03</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORSTRIPCH%20-%20STRIPCHART%20RECORDING%20OF%20TOTAL%20POWER">corstripch</a></td>
+
+<td>cor</td>
+
+<td>stripchart recording of total power.</td>
+</tr>
+
+<tr>
+<td>31mar03</td>
+
+<td>mod</td>
+
+<td>lbw cals</td>
+
+<td>idl/data</td>
+
+<td>new calvalues for new lbw receiver</td>
+</tr>
+
+<tr>
+<td>20mar03</td>
+
+<td>mod</td>
+
+<td>posscan</td>
+
+<td>gen</td>
+
+<td>added call to searchhdr</td>
+</tr>
+
+<tr>
+<td>20mar03</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/gendoc.html#SEARCHHDR%20-%20POSITION%20TO%20THE%20NEXT%20AVAILABLE%20HDR%20IN%20THE%20FILE.">searchhdr</a></td>
+
+<td>gen</td>
+
+<td>search forward for start of hdr. Used for linux files that don't start
+with a hdr.</td>
+</tr>
+
+<tr>
+<td>13mar03</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORPWR%20-%20RETURN%20POWER%20INFORMATION%20FOR%20A%20NUMBER%20OF%20RECS">corpwr</a></td>
+
+<td>cor</td>
+
+<td>added pwrcnt keyword to return power counters</td>
+</tr>
+
+<tr>
+<td>25feb03</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/download/download.html#top">download</a></td>
+
+<td>xx</td>
+
+<td>downloading include some ri routines.</td>
+</tr>
+
+<tr>
+<td>25feb03</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/ridoc.html#RIGET%20-%20INPUT%20AN%20RI%20RECORD">riget</a></td>
+
+<td>ri</td>
+
+<td>routine to read ri data.</td>
+</tr>
+
+<tr>
+<td>25feb03</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORACCUM%20-%20ACCUMULATE%20A%20RECORD%20IN%20A%20SUMMARY%20REC">coraccum</a></td>
+
+<td>cor</td>
+
+<td>scl keyword can be an array equal to number of boards</td>
+</tr>
+
+<tr>
+<td>26jan03</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cormapdoc.html#CORMAPBC%20%20%20-%20BAND%20PASS%20CORRECT%20A%20MAP%201%20STRIP%20AT%20A%20TIME">cormapbc</a></td>
+
+<td>cormap</td>
+
+<td>added mask option for tsys removal.</td>
+</tr>
+
+<tr>
+<td>24jan03</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORMONALL%20-%20MONITOR%20CORRELATOR%20DATA,%20BANDPASS,RMS,IMG">cormonall</a></td>
+
+<td>cor</td>
+
+<td>added running average option (ravg) for bandpass correction.</td>
+</tr>
+
+<tr>
+<td>24jan03</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORIMGDISP%20-%20DISPLAY%20A%20SET%20OF%20CORRELATOR%20RECORDS%20AS%20AN%20IMAGE">corimgdisp</a></td>
+
+<td>cor</td>
+
+<td>added running average (ravg) option for bandpass correction.</td>
+</tr>
+
+<tr>
+<td>24jan03</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/gendoc.html#MEANRUN%20-%20COMPUTE%20THE%20RUNNING%20MEAN%20OF%20A%201%20OR%202D%20ARRAY">meanrun</a></td>
+
+<td>gen</td>
+
+<td>compute running mean of 1 or 2d array.</td>
+</tr>
+
+<tr>
+<td>13jan03</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORPLOT%20-%20PLOT%20THE%20CORRELATOR%20DATA.">corplot</a></td>
+
+<td>cor</td>
+
+<td>change so colors work with direct/true color displays.</td>
+</tr>
+
+<tr>
+<td>10jan03</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORMONALL%20-%20MONITOR%20CORRELATOR%20DATA,%20BANDPASS,RMS,IMG">cormonall</a></td>
+
+<td>cor</td>
+
+<td>added nolut keyword. If image displayed then default is to load linear
+ramp in lut.</td>
+</tr>
+
+<tr>
+<td>26dec02</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORINPSCAN%20-%20INPUT%20A%20SCANS%20WORTH%20OF%20DATA">corinpscan</a></td>
+
+<td>cor</td>
+
+<td>sequentially reading with corinpscan would skip last scan of file if
+1 record long.&nbsp;
+<br>fixed 26dec02 (thanks tim...)</td>
+</tr>
+
+<tr>
+<td>22dec02</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORCMPDIST%20-%20COMPUTE%20DISTANCE%20%28RA/DEC%29%20FOR%20SCANS">corcmpdist</a></td>
+
+<td>cor</td>
+
+<td>compute&nbsp; distances from a dataset to a point.</td>
+</tr>
+
+<tr>
+<td>22dec02</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#ARCH_GETONOFF%20-%20GET%20ON/OFF%20-1%20DATA%20FROM%20ARCHIVE">arch_getonoff</a></td>
+
+<td>cor</td>
+
+<td>get a set of position switch data from the archive.</td>
+</tr>
+
+<tr>
+<td>20dec02</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cormapdoc.html#CORMAPINPLIST%20%20-%20INPUT%20A%20MAP%20FROM%20A%20LIST%20OF%20FILES.">cormapinplist</a></td>
+
+<td>cor/cormap</td>
+
+<td>input a map spread over many files.</td>
+</tr>
+
+<tr>
+<td>20dec02</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cormapdoc.html#CORMAPBC%20%20%20-%20BAND%20PASS%20CORRECT%20A%20MAP%201%20STRIP%20AT%20A%20TIME">cormapbc</a></td>
+
+<td>cor/cormap</td>
+
+<td>added tsys,degfit,allstrip options.</td>
+</tr>
+
+<tr>
+<td>20dec02</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cormapdoc.html#CMGAINCOR%20%20-%20GAIN%20CORRECT%20MAP%28S%29">cmgaincor</a></td>
+
+<td>cor/cormap</td>
+
+<td>switched to use corhgainget(). Added Jy keyword. Normalize to avg za5to10.</td>
+</tr>
+
+<tr>
+<td>20dec02</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cormapdoc.html#CORMAPINP%20%20-%20INPUT%20A%20CORRELATOR%20MAP.">cormapinp</a></td>
+
+<td>cor/cormap</td>
+
+<td>added maxrecs keyword. avgsmp keyword will average samples on input.</td>
+</tr>
+
+<tr>
+<td>13dec02</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORRECINFO%20-%20PRINT%20RECORD%20INFO">correcinfo</a></td>
+
+<td>cor</td>
+
+<td>print summary of the record.</td>
+</tr>
+
+<tr>
+<td>09dec02</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#ARCH_GETDATA%20-%20GET%20COR%20DATA%20USING%20THE%20ARCHIVE%20TBL%20ARRAYS">arch_getdata</a></td>
+
+<td>cor</td>
+
+<td>extract data scans from archive.</td>
+</tr>
+
+<tr>
+<td>09dec02</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#SLGETARCHIVE%20-%20GET%20A%20SUBSET%20OF%20SCANLISTS%20FROM%20THE%20ARCHIVE.">arch_gettbl</a></td>
+
+<td>cor</td>
+
+<td>get a table of indices for the requested scans from the archive.</td>
+</tr>
+
+<tr>
+<td>09dec02</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#SLPROCLIST%20-%20CREATE%20SCAN%20LIST%20FOR%20A%20SET%20OF%20FILES">slproclist</a></td>
+
+<td>cor</td>
+
+<td>Scan the corfiles creating the scanlist archive.</td>
+</tr>
+
+<tr>
+<td>09dec02</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORFINDPAT%20-%20GET%20THE%20INDICES%20FOR%20THE%20START%20OF%20A%20PATTERN">corfindpat</a></td>
+
+<td>cor</td>
+
+<td>added more patterns to recognize.</td>
+</tr>
+
+<tr>
+<td>08dec02</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/gendoc.html#SLPROCLIST%20-%20CREATE%20SCAN%20LIST%20FOR%20A%20SET%20OF%20FILES">slproclist</a></td>
+
+<td>gen</td>
+
+<td>create scanlist for a set of files.</td>
+</tr>
+
+<tr>
+<td>08dec02</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#MMCMPSEFD%20-%20COMPUTE%20SEFD%20FOR%20EACH%20ENTRY%20IN%20MM%20STRUCTURE">mmcmpsefd</a></td>
+
+<td>cor</td>
+
+<td>compute sefd from mueller data.</td>
+</tr>
+
+<tr>
+<td>01dec02</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/gendoc.html#WINDOWFUNC%20-%20MAKE%20A%20WINDOW%20FUNCTION">windowfunc</a></td>
+
+<td>gen</td>
+
+<td>create a windowing function (han,ham,cos4,ecb,hsin)</td>
+</tr>
+
+<tr>
+<td>19nov02</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/pntdoc.html">pntroutines</a></td>
+
+<td>gen/pnt</td>
+
+<td>added pointing related idl routines.</td>
+</tr>
+
+<tr>
+<td>22oct02</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORPLOT%20-%20PLOT%20THE%20CORRELATOR%20DATA.">corplot</a></td>
+
+<td>cor</td>
+
+<td>added mask keyword to overplot mask.</td>
+</tr>
+
+<tr>
+<td>19oct02</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORACF%20-%20COMPUTE%20THE%20ACF%20FROM%20THE%20SPECTRA">coracf</a></td>
+
+<td>cor</td>
+
+<td>convert spectra to acf's.</td>
+</tr>
+
+<tr>
+<td>16oct02</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#MMPLOTAZZA%20-%20PLOT%20AZ,ZA%20COVERAGE%20OF%20DATASET.">mmplotazza</a></td>
+
+<td>cor</td>
+
+<td>plot az,za coverage in mueller array.</td>
+</tr>
+
+<tr>
+<td>16oct02</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/gendoc.html#PLTAZZAUSAGE%20-%20PLOT%20THE%202D%20AZ,ZA%20COVERAGE.">pltazzausage</a></td>
+
+<td>gen</td>
+
+<td>plot az,za coverage on the dish of a set of positions.</td>
+</tr>
+
+<tr>
+<td>23sep02</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#PFCALIB%20-%20INTENSITY%20CALIBRATE%20AN%20ENTIRE%20FILE">pfcalib</a></td>
+
+<td>cor</td>
+
+<td>run <a href="http://www.naic.edu/%7Ephil/cordoc.html#CORCALIB%20-%20INTENSITY%20CALIBRATE%20A%20SINGLE%20SPECTRA">corcalib()</a>
+on an entire file.</td>
+</tr>
+
+<tr>
+<td>22sep02</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/gendoc.html#READASCIIFILE%20-%20READ%20AN%20ASCII%20FILE%20INTO%20STRARR">readasciifile</a></td>
+
+<td>gen</td>
+
+<td>read an ascii file into a string array.</td>
+</tr>
+
+<tr>
+<td>21sep02</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORPLOT%20-%20PLOT%20THE%20CORRELATOR%20DATA.">corplot</a></td>
+
+<td>cor</td>
+
+<td>added sym= keyword to plot symbols or hist mode.</td>
+</tr>
+
+<tr>
+<td>21sep02</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORCHKSTR%20-%20CHECK%20BUFFERS%20FOR%20SAME%20STRUCTURE">corchkstr</a></td>
+
+<td>cor</td>
+
+<td>check if 2 {corget} structs can be stored in the same array.</td>
+</tr>
+
+<tr>
+<td>20sep02</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#PFPOSONOFF%20-%20PROCESS%20ALL%20POSITION%20SWITCH%20%20ONOFFS%20IN%20A%20FILE">pfposonoff</a></td>
+
+<td>cor</td>
+
+<td>added /sav option, dir=&nbsp; keyword,</td>
+</tr>
+
+<tr>
+<td>20sep02</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/gendoc.html#FILE_EXISTS%20-%20CHECK%20IF%20A%20FILE%20NAME%20EXISTS">file_exists</a></td>
+
+<td>gen</td>
+
+<td>check if a file exists (searching multiple directories)</td>
+</tr>
+
+<tr>
+<td>19sep02</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/gendoc.html#MK_HTML_HELP_PH">mk_html_help_ph</a></td>
+
+<td>gen</td>
+
+<td>modified mk_html_help.. added bgcolor.</td>
+</tr>
+
+<tr>
+<td>18sep02</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/gendoc.html#STRTOVARNAM%20-%20MODIFY%20A%20STRING%20TO%20BE%20A%20VALID%20VARIABLE%20NAME">strtovarnam</a></td>
+
+<td>gen</td>
+
+<td>convert string to valid variable name.</td>
+</tr>
+
+<tr>
+<td>18sep02</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORPLOT%20-%20PLOT%20THE%20CORRELATOR%20DATA.">corplot</a></td>
+
+<td>cor</td>
+
+<td>added col=col keyword change default colors.</td>
+</tr>
+
+<tr>
+<td>15sep02</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORMONALL%20-%20MONITOR%20CORRELATOR%20DATA,%20BANDPASS,RMS,IMG">cormonall</a></td>
+
+<td>cor</td>
+
+<td>added df keyword to remove digital fitler bandpass.</td>
+</tr>
+
+<tr>
+<td>15sep02</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORDFBP%20-%20RETURN%20THE%20DIGITAL%20FILTER%20BANDPASSES.">cordfbp</a></td>
+
+<td>cor</td>
+
+<td>generate the digital filter bandpass for a correlator record.</td>
+</tr>
+
+<tr>
+<td>14sep02</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORMONALL%20-%20MONITOR%20CORRELATOR%20DATA,%20BANDPASS,RMS,IMG">cormonall</a></td>
+
+<td>cor</td>
+
+<td>added option to plot running average of a scan with baseline removal.</td>
+</tr>
+
+<tr>
+<td>12sep02</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORSMO%20-%20SMOOTH%20CORRELATOR%20DATA.">corsmo</a></td>
+
+<td>cor</td>
+
+<td>added savgol keyword. Smooth nchns at a time with an Nth order polynomial.</td>
+</tr>
+
+<tr>
+<td>11sep02</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORPOSONOFF%20-%20PROCESS%20A%20POSITION%20SWITCH%20SCAN">corposonoff</a></td>
+
+<td>cor</td>
+
+<td>added /scljy keyword. Will scale to janskies using gain curve</td>
+</tr>
+
+<tr>
+<td>11sep02</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORWRITEASCII%20-%20OUTPUT%20AN%20ASCII%20DUMP%20OF%20THE%20CORRELATOR%20DATA">corwriteascii</a></td>
+
+<td>cor</td>
+
+<td>write correlator data to a file in ascii (not much header info written).</td>
+</tr>
+
+<tr>
+<td>11sep02</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#PFPOSONOFF%20-%20PROCESS%20ALL%20POSITION%20SWITCH%20%20ONOFFS%20IN%20A%20FILE">pfposonoff</a></td>
+
+<td>cor</td>
+
+<td>process file: all on/off position switch data in the file. Included
+/scljy keyword.
+<br>This routine was in idl/Cor2/proc.</td>
+</tr>
+
+<tr>
+<td>10sep02</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORCALIB%20-%20INTENSITY%20CALIBRATE%20A%20SINGLE%20SPECTRA">corcalib</a></td>
+
+<td>cor</td>
+
+<td>added bpc=3. bandpass correct using the avg&nbsp; data (after polyfit
+or smoothing)</td>
+</tr>
+
+<tr>
+<td>03sep02</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORMON%20-%20MONITOR%20DATA%20FROM%20FILE.">cormon</a>
+<br><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORMONALL%20-%20MONITOR%20CORRELATOR%20DATA,%20BANDPASS,RMS,IMG">cormonall</a></td>
+
+<td>cor</td>
+
+<td>added scan= keyword to position before monitoring</td>
+</tr>
+
+<tr>
+<td>02aug02</td>
+
+<td>mod&nbsp;
+<br>mod&nbsp;
+<br>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORMATH%20-%20PERFORM%20MATH%20ON%20CORRELATOR%20DATA">cormath</a>
+<br><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORCALIB%20-%20INTENSITY%20CALIBRATE%20A%20SINGLE%20SPECTRA">corcalib</a>
+<br><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORSTAT%20-%20COMPUTE%20MEAN,RMS%20BY%20SBC">corstat</a></td>
+
+<td>cor&nbsp;
+<br>cor&nbsp;
+<br>cor</td>
+
+<td>added /norm keyword to normalize band passes.
+<br>added blrem keyword to remove baselines.&nbsp;
+<br>compute mean, rms statistics by sbc.</td>
+</tr>
+
+<tr>
+<td>31aug02</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORBL%20-%20BASELINE%20A%20CORRELATOR%20DATA%20SET">corbl</a></td>
+
+<td>cor</td>
+
+<td>baseline a correlator data set interactively.</td>
+</tr>
+
+<tr>
+<td>29aug02</td>
+
+<td>new</td>
+
+<td>cband gaincurve</td>
+
+<td>data</td>
+
+<td>added cband gain curve (function za) access via gainget.</td>
+</tr>
+
+<tr>
+<td>23aug02</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORCALIB%20-%20INTENSITY%20CALIBRATE%20A%20SINGLE%20SPECTRA">corcalib</a></td>
+
+<td>cor</td>
+
+<td>calibrate an on source scan using cal on off scans.</td>
+</tr>
+
+<tr>
+<td>20aug02</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORSTOKES%20-%20INPUT%20AND%20INTENSITY%20CALIBRATE%20STOKES%20DATA.">corstokes</a></td>
+
+<td>cor</td>
+
+<td>fixed scaling bug for u,v. check version for poly_fit.</td>
+</tr>
+
+<tr>
+<td>12aug02</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORCALONOFFM%20-%20%20PROCESS%20A%20CAL%20ON/OFF%20PAIR%20WITH%20A%20MASK">corcalonoffm</a></td>
+
+<td>cor</td>
+
+<td>add edgefract keyword, optionally return cal spectra.</td>
+</tr>
+
+<tr>
+<td>12aug02</td>
+
+<td>mod</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORMASK%20-%20INTERACTIVELY%20CREATE%20A%20MASK%20FOR%20EACH%20CORRELATOR%20BOARD">cormask</a></td>
+
+<td>cor</td>
+
+<td>added edgefract keyword to bypass interactive specification.</td>
+</tr>
+
+<tr>
+<td>12aug02</td>
+
+<td>new</td>
+
+<td><a href="http://www.naic.edu/%7Ephil/cordoc.html#CORSUBSET%20-%20MAKE%20A%20COPY%20OF%20DATA%20KEEPING%20ONLY%20SPECIFIED%20BOARDS">corsubset</a></td>
+
+<td>cor</td>
+
+<td>create subset of data structure by boards</td>
+</tr>
+
+<tr>
+<td>12aug02</td>
+
+<td>mod</td>
+
+<td>coraccum</td>
+
+<td>cor</td>
+
+<td>add brd keyword to only accumulate specified boards.</td>
+</tr>
+
+<tr>
+<td>12aug02&nbsp;</td>
+
+<td>mod</td>
+
+<td>coravg</td>
+
+<td>cor</td>
+
+<td>switched to use corsubset</td>
+</tr>
+
+<tr>
+<td>20jul02</td>
+
+<td>mod</td>
+
+<td>cormath</td>
+
+<td>cor</td>
+
+<td>b1[N] op b2[1] now allowed&nbsp;
+<br>scaler ops can be done by brd,polarization</td>
+</tr>
+
+<tr>
+<td>20jul02</td>
+
+<td>mod</td>
+
+<td>coravg</td>
+
+<td>cor</td>
+
+<td>added /norm keyword</td>
+</tr>
+
+<tr>
+<td>10jul02</td>
+
+<td>new</td>
+
+<td>agcinpday&nbsp;
+<br>agcmon</td>
+
+<td>agc</td>
+
+<td>added routines to look at az,gr,ch data.</td>
+</tr>
+
+<tr>
+<td>01jul02</td>
+
+<td>mod</td>
+
+<td>corstokes</td>
+
+<td>cor</td>
+
+<td>added phase and bandpass calibration.</td>
+</tr>
+
+<tr>
+<td>04jun02</td>
+
+<td>mod</td>
+
+<td>coravg</td>
+
+<td>cor</td>
+
+<td>pol avging was not updating the freq offsets for boards if 1 pol/brd.
+Would cause problems if the freq offsets for the boards were different.</td>
+</tr>
+
+<tr>
+<td>27may02</td>
+
+<td>mod</td>
+
+<td>coravg</td>
+
+<td>cor</td>
+
+<td>added min, max keywords to return min or max rather than average.</td>
+</tr>
+
+<tr>
+<td>11may02</td>
+
+<td>new</td>
+
+<td>dwtempall</td>
+
+<td>dwtemp</td>
+
+<td>read data from rmall routine.</td>
+</tr>
+
+<tr>
+<td>03may02</td>
+
+<td>new</td>
+
+<td>cormath</td>
+
+<td>cor</td>
+
+<td>perform math (+,-,/,+..) on cor data.</td>
+</tr>
+
+<tr>
+<td>03may02</td>
+
+<td>new</td>
+
+<td>corsmo</td>
+
+<td>cor</td>
+
+<td>boxcar smooth data.</td>
+</tr>
+
+<tr>
+<td>03may02</td>
+
+<td>mod</td>
+
+<td>corhan</td>
+
+<td>cor</td>
+
+<td>added option to not return data in place</td>
+</tr>
+
+<tr>
+<td>03may02</td>
+
+<td>mod</td>
+
+<td>corplot</td>
+
+<td>cor</td>
+
+<td>if coraccum data input, then average before plotting</td>
+</tr>
+
+<tr>
+<td>03may02</td>
+
+<td>new</td>
+
+<td>coraccum</td>
+
+<td>cor</td>
+
+<td>accumulate records</td>
+</tr>
+
+<tr>
+<td>26apr02</td>
+
+<td>mod</td>
+
+<td>corplot</td>
+
+<td>cor</td>
+
+<td>added /nolab param for stokes plotting.</td>
+</tr>
+
+<tr>
+<td>19apr02</td>
+
+<td>new</td>
+
+<td>corstokes</td>
+
+<td>cor</td>
+
+<td>Intensity calibrate stokes data.</td>
+</tr>
+
+<tr>
+<td>19apr02</td>
+
+<td>new</td>
+
+<td>cormask</td>
+
+<td>cor</td>
+
+<td>interactively create a mask for each board</td>
+</tr>
+
+<tr>
+<td>15apr02</td>
+
+<td>new</td>
+
+<td>yymmddtojulday</td>
+
+<td>gen</td>
+
+<td>convert yymmdd to julian day.</td>
+</tr>
+
+<tr>
+<td>15apr02</td>
+
+<td>new</td>
+
+<td>mmgetarchive</td>
+
+<td>cor</td>
+
+<td>extract processed mueller data from archive.</td>
+</tr>
+
+<tr>
+<td>12apr02</td>
+
+<td>new</td>
+
+<td>mmplotpnterr</td>
+
+<td>cor</td>
+
+<td>plot pointing error for mueller data</td>
+</tr>
+
+<tr>
+<td>21mar02</td>
+
+<td>new</td>
+
+<td>dwtempinp</td>
+
+<td>dwtemp</td>
+
+<td>input dewar temperature data</td>
+</tr>
+
+<tr>
+<td>21mar02</td>
+
+<td>new</td>
+
+<td>dwtempplot</td>
+
+<td>dwtemp</td>
+
+<td>plot dewar temperature data</td>
+</tr>
+
+<tr>
+<td>21mar02</td>
+
+<td>new</td>
+
+<td>daynotojul</td>
+
+<td>gen</td>
+
+<td>convert daynumber,year to julian day.</td>
+</tr>
+
+<tr>
+<td>07mar02</td>
+
+<td>mod</td>
+
+<td>corfrq</td>
+
+<td>cor</td>
+
+<td>added option to return rest frequency rather than topocentric frequency.</td>
+</tr>
+
+<tr>
+<td>27feb02</td>
+
+<td>new</td>
+
+<td>cumfilter</td>
+
+<td>gen</td>
+
+<td>carl heiles' cumfilter routine.</td>
+</tr>
+
+<tr>
+<td>18feb02</td>
+
+<td>new</td>
+
+<td>mmplotgtsb</td>
+
+<td>cor</td>
+
+<td>plot gain,tsys,sefd, beamWidth for mueller data</td>
+</tr>
+
+<tr>
+<td>18feb02</td>
+
+<td>new</td>
+
+<td>mmplotcsme</td>
+
+<td>cor</td>
+
+<td>plot coma,1stSideLb,mainbeam,mainbeam+1stSdlobe efficiencies.</td>
+</tr>
+
+<tr>
+<td>21jan02</td>
+
+<td>mod</td>
+
+<td>bluser</td>
+
+<td>generic</td>
+
+<td>fixed display of mask when hor scale not yet set.</td>
+</tr>
+
+<tr>
+<td>07jan02</td>
+
+<td>new</td>
+
+<td>cataloginp</td>
+
+<td>generic</td>
+
+<td>input a pointing catalog.</td>
+</tr>
+
+<tr>
+<td>06jan02</td>
+
+<td>new</td>
+
+<td>hdrget</td>
+
+<td>generic</td>
+
+<td>read in a number of headers.</td>
+</tr>
+
+<tr>
+<td>29dec01</td>
+
+<td>mod</td>
+
+<td>cormon</td>
+
+<td>cor</td>
+
+<td>added keywords avgscan,no1rec for remote monitoring.</td>
+</tr>
+
+<tr NOSAVE>
+<td>10dec01</td>
+
+<td>new</td>
+
+<td NOSAVE>stripmask</td>
+
+<td>generic</td>
+
+<td NOSAVE>Interactively create masks for strips of a map.</td>
+</tr>
+
+<tr NOSAVE>
+<td>10dec01</td>
+
+<td>mod</td>
+
+<td NOSAVE>cormapbc</td>
+
+<td>cormap</td>
+
+<td>Now removes system temperature. Also allows you to specify alternate
+sides of map for bandpass correction of each strip. /normal keyword removed.</td>
+</tr>
+</table>
+
+<p><a href="http://www.naic.edu/%7Ephil/index.html#top">home_~phil</a>
+</body>
+</html>

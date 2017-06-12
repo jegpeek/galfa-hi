@@ -1,0 +1,39 @@
+# 
+# alfa pointing model file
+# format is  az  za.  units are great circle arcseconds
+#   col 1
+#   #  - comment
+#   #!modelxx  yymmdd  start of model 
+#   blank  or number   current model data (N lines)
+#   #!       az  za    archived model data
+#!modelALFA15A  13 B enctbl15A  040513 model15
+# tur:26.64 ,scl:-.75 format B .. from 02may04 survey.
+#   -40.00   -102.55  constant   .. same offsets as sbn. use for verify
+   -37.00     -57.55  constant 07jul04.. steveT requested +3 az, +45 in za
+    -6.05    -95.56  cos(az)
+    92.35     -4.13  sin(az)
+  -731.21    141.69  sin(za)
+ -1013.97    677.51  sin(za)**2
+   -24.53    -10.41  cos(3az)
+   -11.19     -7.71  sin(3az)
+     9.18    -10.39  sin(za-balance)*cos(3az)
+   106.04      0.08  sin(za-balance)*sin(3az)
+     3.02      0.43  cos(2az)
+    -1.74     -0.62  sin(2az)
+    -3.46      0.03  cos(6az)
+     1.29     -0.36  sin(6az)
+#!modelALFA14A 13 B enctbl14A  040426 copied sbn model
+# tur:26.5  ,scl:-.75 format B  ..
+#!   -50.96    -62.26  constant  10apr04 track after kevlar tension
+#!    -6.41   -100.92  cos(az)
+#!    99.16     -5.74  sin(az)
+#!  -713.84    175.81  sin(za)
+#! -1028.24    489.81  sin(za)**2
+#!   -22.20    -11.42  cos(3az)
+#!   -12.08     -7.80  sin(3az)
+#!     7.31      4.00  sin(za-balance)*cos(3az)
+#!   111.56      1.25  sin(za-balance)*sin(3az)
+#!     2.49      0.43  cos(2az)
+#!    -0.69     -0.42  sin(2az)
+#!    -1.93     -0.30  cos(6az)
+#!     0.91     -0.19  sin(6az)

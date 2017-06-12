@@ -1,0 +1,327 @@
+#!/usr/bin/perl 
+# -w
+
+#
+# Jeff Mock
+# 2030 Gough 
+# San Francisco, CA 94109
+# jeff@mock.com
+# (c) 2004
+#
+
+#
+# $Id: gtest-pdl,v 1.3 2004/10/13 06:24:55 jeff Exp $
+#
+
+#
+# Demo program to talk to Galfa through a socket and display
+# a graph or waterfall graph of one beam of the narrowband
+# spectrum.
+#
+# Requires PDL built with PGPLOT.
+#
+
+use strict; 
+use Getopt::Long;
+use IO::Socket;
+use IO::Select;
+use PDL;
+use PDL::Graphics::PGPLOT::Window;
+use PDL::Graphics::LUT;
+use PDL::NiceSlice;
+
+use constant galfa_magic        => 0xdeadbeef;
+use constant galfa_version      => 0x00000101;
+use constant galfa_nbins        => 7679;
+
+# Command line options
+#
+our $opt_galfa      = "seti3.mock.com";
+our $opt_port       = 1420;
+our $opt_setdac     = 0;
+our $opt_default    = 0;
+our $opt_wfall      = 0;
+our $opt_beam       = 0;
+our $opt_polarity   = 0;
+our $opt_tlen       = 100;
+
+our %opts = (
+    'galfa=s'                   => \$opt_galfa,
+    'port=n'                    => \$opt_port,
+    'default'                   => \$opt_default,
+    'dac=o'                     => \$opt_setdac,
+    'wfall'                     => \$opt_wfall,
+    'beam=o'                    => \$opt_beam,
+    'polarity=o'                => \$opt_polarity,
+    'tlen=o'                    => \$opt_tlen,
+);
+if (!GetOptions(%opts)) {
+    print STDERR "
+        Exercise socket interface to galfa
+        
+        gtest-pdl [options]
+            [--galfa=s]         Name of the spectrometer
+            [--port=n]          Port to connect om spectrometer ($opt_port) 
+            [--default]         Set default galfa settings
+            [--dac=n]           Set DAC levels to n ADC RMS units
+            [--wfall]           Do a waterfall graph
+            [--beam=n]          Plot beam n (0-6)
+            [--polarity=n]      Plot polarity n (0-1)
+            [--tlen=n]          Time length for waterfall ($opt_tlen s)
+
+    \n";
+    exit 1;
+}
+
+# Open connection to galfa box
+#
+our $g = IO::Socket::INET->new (
+        PeerAddr => $opt_galfa,
+        PeerPort => $opt_port,
+        Proto    => "tcp",
+        Type     => SOCK_STREAM
+    ) or die "Couldn't connect to $opt_galfa:$opt_port : $@\n";
+
+
+# Put a window on the screen for graphics
+#
+our $win = PDL::Graphics::PGPLOT::Window->new(
+    {   Dev     => "/xw",
+        Unit    => 3,
+        WindowXSize => 799,
+        WindowYSize => 600,
+    }
+);
+
+
+# Send a command packet to galfa
+#
+sub send_cmd {
+    my  $sock = shift;
+    my  $p = shift;     # reference to hash
+
+    my $pkt = pack 'N11a124',
+        164,
+        galfa_magic,
+        galfa_version,
+        $$p{cmd},
+        0,
+        $$p{cnt},
+        $$p{mix},
+        $$p{wshift},
+        $$p{nshift},
+        $$p{wpfb},
+        $$p{npfb},
+        "";
+    $sock->send($pkt);
+}
+
+# Block waiting for input available on socket with timeout
+#
+sub sock_canread {
+    my  $sock = shift;
+    my  $to = shift;
+    
+    my $select = IO::Select->new($sock);
+    my $r = $select->can_read($to);
+    return $r;
+}
+
+# Read a requested number of bytes from the socket or
+# die with a timeout
+#
+sub read_sock {
+    my  $sock = shift;
+    my  $len = shift;
+
+    my  $pkt = "";
+    while ($len > 0) {
+        die "Socket timed out" unless sock_canread($sock, 5);
+        my  $pktt;
+        die "Recv failed: $!" unless 
+            defined(recv($sock, $pktt, $len, 0));
+
+        $len -= length($pktt);
+        $pkt .= $pktt;
+    }
+    return $pkt;
+}
+
+# Read a packet from galfa, can be either reponse for data
+# packet
+#
+sub get_resp {
+    my  $sock = shift;
+
+    my  $lenp = read_sock($sock, 4);
+    my  $len = unpack 'N', $lenp;
+    my  $pkt = read_sock($sock, $len);
+    my  %resp = ();
+
+    if ($len == 164) {
+        # response packet
+        my @vals = unpack 'N*', $pkt;
+        my @dac = @vals[13..26];
+        my @rms = @vals[27..40];
+        %resp = (
+            magic       => $vals[0],
+            version     => $vals[1],
+            cmd         => $vals[2],
+            response    => $vals[3],
+            cnt         => $vals[4],
+            mix         => $vals[5],
+            wshift      => $vals[6],
+            nshift      => $vals[7],
+            wpfb        => $vals[8],
+            npfb        => $vals[9],
+            beam        => $vals[10],
+            time1       => $vals[11],
+            time2       => $vals[12],
+            dac         => \@dac,
+            rms         => \@rms,
+        );
+        die "Magic failure from galfa" if $resp{magic} != galfa_magic;
+        die "Version failure from galfa" if $resp{version} != galfa_version;
+    } elsif ($len == 32804) {
+        # Data packet
+        my @vals = unpack 'N*', $pkt;
+        # my $ndata = double(@vals[10..7944]);
+        # my $wdata = double(@vals[7945..8200]);
+        my $ndata = double(@vals[10..7688]);
+        my $wdata = double(@vals[7689..8200]);
+        %resp = (
+            magic       => $vals[0],
+            version     => $vals[1],
+            cmd         => $vals[2],
+            response    => $vals[3],
+            error       => $vals[4],
+            time1       => $vals[5],
+            time2       => $vals[6],
+            seq         => $vals[7],
+            beam        => $vals[8],
+            polarity    => $vals[9],
+            ndata       => $ndata,
+            wdata       => $wdata,
+        );
+        die "Magic failure from galfa" if $resp{magic} != galfa_magic;
+        die "Version failure from galfa" if $resp{version} != galfa_version;
+        # printf "Data seq: %d, beam: %d, polarity: %d\n",
+        #    $resp{seq}, $resp{beam}, $resp{polarity};
+    } else {
+        die "Hmm unknown packet size of $len";
+    }
+    return \%resp;
+}
+
+sub print_pkt {
+    my  $resp = shift;
+
+    print  "Response packet\n";
+    printf "  magic       %08x\n", $$resp{magic};
+    printf "  version     %08x\n", $$resp{version};
+    printf "  cmd         %d\n", $$resp{cmd};
+    printf "  response    %d\n", $$resp{response};
+    printf "  cnt         %d\n", $$resp{cnt};
+    printf "  mix         %d\n", $$resp{mix};
+    printf "  wshift      %d\n", $$resp{wshift};
+    printf "  nshift      %d\n", $$resp{nshift};
+    printf "  wpfb        %03x\n", $$resp{wpfb};
+    printf "  npfb        %04x\n", $$resp{npfb};
+    printf "  beam        %02x\n", $$resp{beam};
+    printf "  time1       %d\n", $$resp{time1};
+    printf "  time2       %d\n", $$resp{time2};
+    printf "  dac         %s\n", join(' ', @{$$resp{dac}});
+    printf "  rms         %s\n", join(' ', @{$$resp{rms}});
+    print  "\n";
+}
+
+
+# Option to set default settings in galfa
+#
+if ($opt_default) {
+    my %setparam = (
+        cmd         => 2,
+        cnt         => 0,
+        mix         => 26,
+        wshift      => 0,
+        nshift      => 0,
+        wpfb        => 0xdb,
+        npfb        => 0x0555
+    );
+    send_cmd($g, \%setparam);
+}
+
+# Option to calibrate galfa levels
+#
+if ($opt_setdac) {
+    my %setdac = (
+        cmd         => 5,       # set dac
+        cnt         => $opt_setdac,
+    );
+    send_cmd($g, \%setdac);
+    my $x = get_resp($g);
+    print_pkt($x);
+}
+
+# Do either a graph or a waterfall graph
+#
+if ($opt_wfall) {
+    my %getdata = (
+        cmd         => 3,       # get data
+        cnt         => 0,
+    );
+    
+    my $mp = 0;
+    my $img = zeroes(galfa_nbins, $opt_tlen);
+    send_cmd($g, \%getdata);
+
+    $win->imag($img);
+    $win->hold;
+    while (1) {
+        my $x = get_resp($g);
+        if ($$x{beam} == $opt_beam && $$x{polarity} == $opt_polarity) {
+            $img(:,0:$opt_tlen-2) .= $img(:,1:$opt_tlen-1);
+            my $p = $$x{ndata};
+            my $mpt = max($p);
+            $mp = $mpt if $mpt>$mp;
+            $p /= $mp if $mp>0;
+            $img(:,($opt_tlen-1)) .= $p;
+            $win->ctab(lut_data("rainbow2"));
+            $win->imag($img(:,-1:0:-1));
+        }
+    }
+} else {
+    my %getdata = (
+        cmd         => 3,       # get data
+        cnt         => 0,
+    );
+    send_cmd($g, \%getdata);
+    my $mp = 0;
+    my $first = 1;
+    my $seql = 0;
+    while (1) {
+        my $x = get_resp($g);
+        if ($$x{beam} == $opt_beam) {
+            if ($$x{polarity} == 0) {
+                if ($first) {
+                    $seql = $$x{seq};
+                    $first = 0;
+                } else {
+                    $seql = ($seql+1) & 0xffff;
+                    die "Sequence mismatch $seql $$x{seq}" if $seql != $$x{seq};
+                }
+            }
+            $win->hold if $$x{polarity}==1;
+            my $color = 3;
+            $color = 2 if $$x{polarity}==1;
+            my $p = $$x{ndata};
+            my $mpt = max($p);
+            $mp = $mpt if $mpt>$mp;
+            $p /= $mp if $mp>0;
+            printf "%d %d %d\n", $$x{time1}, $$x{time2}, $$x{seq};
+            $win->line($p->xvals, $p, { yrange => [0,1], color => $color });
+            $win->release if $$x{polarity}==1;
+        }
+    }
+}
+

@@ -1,0 +1,66 @@
+
+generating lsfs files
+
+first, preliminary job is to select groups of lsfs files that go
+together. This is done asutomatically for the two cases below:
+
+case 1:
+IF YOU HAVE MANY DAYS TO REDUCE, follow the example in
+gsr/run/lsfs_skel/manydays_skel.idlprc
+which invokes
+togslsfs_select
+	input: a list of fits files for many days
+	output: a specification of which days go together. 
+
+use this as input for find_smartf, below, as in the example of 
+gsr/run/lsfs_skel/manydays_skel.idlprc
+
+
+case 2:
+IF YOU HAVE ONE DAY TO REDUCE, follow the example in
+gsr/run/lsfs_skel/oneday_skel.idlprc
+which invokes
+find_smartf
+	input: a list of fits files for a given day; 
+if from togslsfs_select, use example in
+
+	output: an abbreviatetd list of only those contaiing SMARTF
+
+given that abbreviated list, find the groupings of LSFS for that day
+(even if there is only one) following the example in
+gsr/run/lsfs_skel/oneday_skel.idlprc
+which invokes
+
+smartf_groups
+	input: the output of find_smartf
+	output: a specification of groups of lsfs cal within that day 
+		that need to be processed separately.
+
+
+
+use the output of smartf_groups as input to lsfs_shell, as in the example in 
+gsr/run/lsfs_skel/oneday_skel.idlprc
+
+--------------------------------------------------------------------
+
+actually generating the lsfs files:
+
+lsfs_shell
+	reads relevant fits files
+	calls LSFS, which does lsfs soln as described below
+	calls GGNB_RECON, which reconsstitutes the nb bandpass as
+		described below
+	writes out the save file.
+
+lsfs
+	input of original lsfs data from lsfs_shell
+	calls M1_TO_M1S_S0, which applies a first-cut filters to 
+		gett rid of stuff that isn't perrfect lsfs.
+	calls LSFS1, which applies the final filter to gett rid of 
+		stuff that isn't perrfect lsfs.
+	calls CARL_PRELIMINARY, which sets up stuff for the lsfs fit
+	calls CARL9, which actually does the lsfs fits (both wb and nb)
+
+ggnb_recon
+	we solve for 480 channel of nb if gain; this interpolates to all
+		7679 channels

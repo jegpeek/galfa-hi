@@ -1,0 +1,12 @@
+\contentsline {section}{\numberline {1}INTRODUCTION}{1}
+\contentsline {section}{\numberline {2}GENERATING THE {\it mh} FILES}{2}
+\contentsline {subsection}{\numberline {2.1}Generate the list of fits files}{2}
+\contentsline {subsection}{\numberline {2.2}Determine the paths for input and output}{3}
+\contentsline {subsection}{\numberline {2.3}The rest is easy\dots }{3}
+\contentsline {section}{\numberline {3}GENERATING THE {\it lsfs} FILES IN THE STANDARD WAY}{3}
+\contentsline {subsection}{\numberline {3.1}Generate the list of fits files}{4}
+\contentsline {subsection}{\numberline {3.2}Determine the paths for input and output}{4}
+\contentsline {subsection}{\numberline {3.3}The rest is easy\dots }{4}
+\contentsline {section}{\numberline {4}GENERATING THE {\it lsfs} FILES WHEN THERE ARE PROBLEMS}{4}
+\contentsline {subsection}{\numberline {4.1}Examining the sequence of operations during the $lsfs$ calibration}{5}
+\contentsline {subsection}{\numberline {4.2}Running the $lsfs$ for special cases}{8}

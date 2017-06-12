@@ -1,0 +1,95 @@
+#
+# gregorian 430 Mhz 
+# format is  az  za.  units are great circle arcseconds
+#   col 1
+#   #  - comment
+#   #!modelxx  yymmdd  start of model 
+#   blank  or number   current model data (N lines)
+#   #!       az  za    archived model data
+#
+#!model43015A  13 B enctbl15A  040513 model15
+# tur:251.8 ,scl:-.75 format B .. 
+#  -40.00   -102.55  constant  .. same offset sbn..need to check this.
+   -35.48    -97.48  constant  20may04 from verify run
+    -6.05    -95.56  cos(az)
+    92.35     -4.13  sin(az)
+  -731.21    141.69  sin(za)
+ -1013.97    677.51  sin(za)**2
+   -24.53    -10.41  cos(3az)
+   -11.19     -7.71  sin(3az)
+     9.18    -10.39  sin(za-balance)*cos(3az)
+   106.04      0.08  sin(za-balance)*sin(3az)
+     3.02      0.43  cos(2az)
+    -1.74     -0.62  sin(2az)
+    -3.46      0.03  cos(6az)
+     1.29     -0.36  sin(6az)
+#!model43014A  13 B enctbl14A  030304 model14
+# tur:251.8 ,scl:-.75 format B  ..
+#!  -38.81    -79.26  constant    same offsets at sbn
+#!    -6.41   -100.92  cos(az)
+#!    99.16     -5.74  sin(az)
+#!  -713.84    175.81  sin(za)
+#! -1028.24    489.81  sin(za)**2
+#!   -22.20    -11.42  cos(3az)
+#!   -12.08     -7.80  sin(3az)
+#!     7.31      4.00  sin(za-balance)*cos(3az)
+#!   111.56      1.25  sin(za-balance)*sin(3az)
+#!     2.49      0.43  cos(2az)
+#!    -0.69     -0.42  sin(2az)
+#!    -1.93     -0.30  cos(6az)
+#!     0.91     -0.19  sin(6az)
+#!model43011A  13 B enctbl11A  000211 model11 done.
+# tur:76.83 ,scl:-.75 format B  ..
+#!   -41.66    -90.04  offsets  offsets of sband narrow
+#!   -14.28    -95.08  cosaz
+#!    91.27    -11.98  sinaz
+#!   -969.26    261.77  sinza az enc jump 16sep02
+#!  -796.59   -348.23  sinza*sinza
+#!   -22.31    -10.79  cos3az
+#!   -13.95     -7.12  sin3az
+#!    31.40    -14.38  cos3az*sin(za-balance)
+#!   119.20     18.99  sin3az*sin(za-balance)
+#!     2.40      3.95  cos2az
+#!    -6.11     -1.75  sin2az
+#!    -2.89      0.91  cos6az
+#!    -0.19     -0.77  sin6az
+#!model43010  13 B enctbl10  990105
+# tur:251.8 ,scl:-.75 format B  ..
+#                              afte dome  realignment
+#  -40.99    -76.13  offsets
+#  -23.79    -82.13  offsets    +17.2,-6
+#!   -28.29    -77.63  offsets     -4.5",+4.5" 2nd iteration full track 5jan99
+#!   -16.19    -96.82  cosaz
+#!    94.12    -14.03  sinaz
+#!   809.88     62.71  sinza
+#! -1549.79    325.55  sinza*sinza
+#!   -22.45    -10.42  cos3az
+#!   -11.79     -6.48  sin3a
+#!    29.68     -9.38  cos3az*sin(za-balance)
+#!   109.85     10.82  sin3az*sin(za-balance)
+#!     3.03      5.49  cos2az
+#!    -6.62     -1.19  sin2az
+#!    -1.76     -0.24  cos6az
+#!     1.05      0.08  sin6az
+#!model4309  13 B enctbl9  980528 
+# tur:251.8 ,scl:-.75 format B  ..28may98 all data, only 1st 1/2 last src
+#							             tmcon:.224
+#   -46.73     -32.34 offsets sband 
+#   -11.63     -48.49 cosAz
+#    45.33     -11.13 sinAz
+#  12oct98 after georges add offsets: 9.46 0
+#                           cosAz  : -1.80  -8.14
+#                           sinAz  :  6.69   2.13
+#!   -37.27     -32.34 offsets  oct 12 updates..
+#!   -13.43     -56.63 cosAz
+#!    52.02      -9.00 sinAz
+#!   763.56    -234.42 sinZa
+#! -1578.65     896.11 sinZa*sinZa
+#!   -22.98      -7.86 cos3az
+#!   -14.70      -6.77 sin3az
+#!    33.33     -20.95 cos3az*sin(za-balance)
+#!   109.32      22.21 sin3az*sin(za-balance)
+#!     0.15       2.27 cos2az
+#!    -2.35      -2.04 sin2az
+#!    -3.68       0.55 cos6az
+#!     0.51      -0.57 sin6az

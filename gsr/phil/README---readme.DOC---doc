@@ -1,0 +1,8 @@
+
+when transporting this subdir tree to other sites, be sure to appropriately
+edit the file
+
+gen/aodefdir.pro
+
+
+

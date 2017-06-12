@@ -1,0 +1,11 @@
+
+setenv LM_LICENSE_FILE 1700@license.ssl.berkeley.edu
+setenv IDL_STARTUP   /share/galfa/galfa/gsr/start_ao.idl
+setenv GALFAPATH     /share/galfa/galfa/gsr/
+setenv CARLPATH      /share/galfa/galfa/gsr/carlpath/
+setenv GSRPATH       /share/galfa/galfa/gsr/
+setenv TREETOP       /share/galfa/galfa/
+#setenv PHILTOP       /pkg/rsi/local/libao/phil/
+setenv PHILTOP       /share/galfa/galfa/gsr/phil/
+setenv PHILPATH       /share/galfa/galfa/gsr/phil/
+

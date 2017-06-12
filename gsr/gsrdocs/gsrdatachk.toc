@@ -1,0 +1,17 @@
+\contentsline {section}{\numberline {1}INTRODUCTION: SOME PROBLEMS WE HAVE EXPERIENCED}{2}
+\contentsline {section}{\numberline {2}BEFORE WE BEGIN\dots GENERATE THE AUXILIARY FILES CALLED $mh$ AND $lsfs$ FILES}{2}
+\contentsline {section}{\numberline {3}NOW WE REALLY BEGIN! LOOKING AT THE DIAGNOSTICS}{3}
+\contentsline {subsection}{\numberline {3.1}Generate the list of $mh$ files to examine}{3}
+\contentsline {subsection}{\numberline {3.2}Look for dead receivers}{3}
+\contentsline {subsection}{\numberline {3.3}Look at the feed parameters for problems with feeds}{5}
+\contentsline {subsection}{\numberline {3.4}Look for the SJU airport radar}{7}
+\contentsline {subsection}{\numberline {3.5}Look for periodic signals such as radars with arbitrary periods}{9}
+\contentsline {subsection}{\numberline {3.6}A little different: look at SPECTRA!}{11}
+\contentsline {subsubsection}{\numberline {3.6.1}Generate the quickfile}{11}
+\contentsline {subsubsection}{\numberline {3.6.2}Looking at the quickfile}{12}
+\contentsline {subsection}{\numberline {3.7}Desiderata}{13}
+\contentsline {subsubsection}{\numberline {3.7.1}Using the cursor}{13}
+\contentsline {subsubsection}{\numberline {3.7.2}Blinking two plots}{14}
+\contentsline {subsubsection}{\numberline {3.7.3}How do I determine which file goes with which data?}{14}
+\contentsline {subsubsection}{\numberline {3.7.4}The i.f.\ ripple}{14}
+\contentsline {section}{\numberline {4}DIAGNOSTICS IN DETAIL}{15}

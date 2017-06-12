@@ -1,0 +1,473 @@
+\documentclass[psfig,preprint]{aastex}
+                                                                                
+\begin{document}
+                                                                                
+
+\title{GALFA SPECTROMETER (GALSPECT): SETUP, OPERATION, BASICS}
+
+\author{Carl Heiles (9/5/04), updated by Yvonne Tang (11/1/04), Jeff
+Mock (11/6/04), Sne\v{z}ana (05/22/05)}
+                                                                                
+
+	This material is from Jeff Mock, the person that designed the 
+spectrometer.  This document is a distillation of the full scoop, 
+which is on the webpage {\it seti.berkeley.edu/galfa} . The distillation 
+contains the following: 
+
+\tableofcontents
+
+
+\section{ STARTING GALSPECT} \label{start}
+
+	The control program for GALSPECT is called {\it gdiag} . To run
+GALSPECT for conventional Galactic HI observations, perform the following
+steps: \begin{enumerate}
+
+	\item {\bf Obtain the encryption file $galfa\_key$.} 
+If this is the first
+time you log into GALSPECT, you need to copy the file $galfa\_key$ 
+from Jeff Mock's directory to your home directory. 
+To do so, while working in your home directory, type the command
+
+\vspace{.1in}
+{\centerline{\tt cp ~jmock/galfa\_key .}}
+
+	\item {\bf Log into the GALSPECT computer.} You should have
+already copied the file $galfa\_key$ to your home directory
+and made it read-only by the user ({\it chmod 0400 galfa$\_$key}). Then
+the appropriate command is
+
+\vspace{.1in}
+{\centerline{\tt ssh -i galfa\_key galfa$@$galfa1 }}
+
+	\item {\bf Check that no one else is already using GALSPECT},
+i.e.\ that no one else is running {\it gdiag}
+
+\vspace{.1in}
+{\centerline{\tt  ps}}
+
+\noindent This lists the programs running on the {\it galfa1}
+computer. Look for {\it gdiag} . If it is already running, {\it STOP
+HERE!} 
+
+	\item {\bf Check that the data disk is mounted and has free space.}
+
+\vspace{.1in}
+{\centerline{\tt  df /dump  }}
+
+	\item {\bf Run the basic operational check of GALSPECT.}
+
+\vspace{.1in}
+{\centerline{\tt  /var/diag}}
+
+	Let this run for 30 sec or so.  If there are error messages,
+reboot GALSPECT (see \S 3.1).  If you still get error
+messages, repeat until it works or until you or the equipment 
+die of exhaustion. 
+
+	\item {\bf Set the DAC levels to 10 units rms.}
+
+\vspace{.1in}
+{\centerline{\tt  /var/levels}}
+
+
+	Setup the telescope and move it near the starting source 
+before setting levels.  The 1st IF and IF routing should be 
+configured to provide a valid signal to galspect before setting
+levels.
+
+	Let this run until it finishes.  It prints out its current
+action on the screen and, at the end, a summary.  In the summary, the
+rms should be around 10, as you requested, and the DAC values should be
+around 90.  Sometimes a large RFI pulse might interfere with this operation. 
+If the levels do not look right, repeat this process.
+
+
+{\it Note 1:} The gains increase with decreasing DAC number in a
+{\it highly nonlinear way}.  From DAC=0 to $\sim 90$ the gain decreases
+by $\sim 4$ db; from DAC$\sim 90$ to 255 the gain decreases by $\sim 36$
+db.  Thus, low DAC values are very sensitive to signal levels.  High DAC
+numbers should be very rare. A low DAC number is not a problem as long
+as the rms is acceptable. 
+
+{\it Note 2:} Setting levels depends on lo2! {\it /var/levels} stands for 
+{\it gdiag -newdac=10 -lo2=256.26}.
+If your lo2 is different from 256.26 MHz, meaning your central frequency
+is different from 1420.40 MHz then you will have to modify this script.
+For example, if your central frequency is 1385.0 MHz (used for E-ALFA
+observations) then you need to use:
+{\it gdiag -newdac=10 -lo2=195.845} .
+
+	\item {\bf Decide how many one-second dumps per FITS file you want.}
+The example below assumes 600 ({\it --sdiv=600}), meaning that each FITS 
+file lasts 10 minutes.
+
+	\item {\bf Decide on a project name.} This should normally be the
+observing proposal number, e.g.\ A1943. 
+
+	\item {\bf Create a shell script file with observation parameters.} 
+The file is usually the observing proposal number, it should be 
+placed in /var, make executable ({\it chmod 775 /var/a1943})  and contains a 
+galspect command that looks something like this:
+
+\vspace{.1in}
+
+
+{\centerline{\tt  \#!/bin/sh }}
+{\centerline{\tt  gdiag -galfa -sdiv=600 -scram -lo2=256.25 -proj=A1943 -vnc }}
+
+	\item {\bf Start the observation.} 
+
+\vspace{.1in}
+{\centerline{\tt  /var/A1943}}
+
+\noindent The {\it --time} option allows you to decide the number of seconds
+you want to run the program.  If you want to run forever, don't include the {\it --time}
+option. 
+
+	The {\it --scram} option allows GALSPECT to listen to the network directly
+with the LO values.  It replaces the obsolete option {\it --offset}.
+
+	The {\it --lo2=256.25} option sets the frequency of the LO2
+frequency synthesizer located in the galspect rack to 2*256.25 MHz.
+The synthesizer is set to twice the LO2 frequency to account for the 
+way the analog mixers work in galspect.
+
+	The {\it --vnc} allows you to view the online graphical output
+on your local terminal---and anyone else to view it on her terminal
+(simultaneously).  And not only to view it, but also to change the
+display and ({\it yes, it's true!}) the value of $digitalmix$.  So in
+principle some random hacker---or your collaborator in Timbuktu---could
+ruin your observation.  If you replace the {\it --vnc} by {\it --run},
+then nobody can view the online output, and nobody---not even the local
+keyboard on GALSPECT---can change things while you are running.  If you
+invoke {\it gdiag} and specify neither {\it --vnc} nor {\it --run},
+then GALSPECT's local display and keyboard both function. 
+
+	If you are running from off-site you shouldn't use the display
+because of network latency, so you should not use {\it --vnc}; and if
+you want to make sure that local staff don't accidentally ruin your
+data, use {\it --run}.
+
+\vspace{.1in}
+
+
+{\centerline{\tt  gdiag -run -scram -lo2=256.25 -sdiv=600 -proj=A1943 }}
+
+	\item {\bf Open another xterm and invoke the online display with}
+
+\vspace{.1in}
+{\centerline{\tt  vncviewer galfa1}}
+
+\noindent from LINUX machines, or 
+
+\vspace{.1in}
+{\centerline{\tt  /pkg/misc/bin/vncviewer galfa1}}
+
+\noindent from SOLARIS machines. 
+
+	When running $vncviewer$, you can change the display as
+explained in its documentation (\S \ref{doc} below). Make sure that the RA, DEC, 
+LO1 and LO2 values on the $vncviewer$ display match those on the main observation panel.
+
+	It is advised that you do not run $vncviewer$ remotely.  
+The more people running it, the more
+network bandwidth it uses which might cause the lost of data.  
+
+\item Finally, the files are located in 
+
+%{\verb galfaserv.naic.edu:/export/galfa.startdate.project.sequence.fits }
+{\verb /share/galfa/galfa.startdate.project.sequence.fits }
+
+\end{enumerate}
+
+\section{ STOPPING GALSPECT} \label{stop}
+
+	To stop GALSPECT: \begin{itemize}
+
+\item If you are running $vncviewer$, then stop GALSPECT by typing $q$
+while the cursor is in the plotting window.
+
+\item If you are not running $vncviewer$, then stop GALSPECT by typing
+CTRL-c.
+
+\end{itemize}
+
+\section{ PROBLEMS WHEN RUNNING GALSPECT} \label{problems}
+
+\subsection{Rebooting GALSPECT} \label{rebooting}
+
+	When there is a problem and you need to reboot GALSPECT, 
+you can first stop GALSPECT 
+by typing $q$, then type in $ps$ to check the $pid$(process id) of $gdiag$.  
+After that, type in $kill -9 pid$ to kill the process
+and finally type $reboot$ to, well, reboot GALSPECT.
+
+	When the above method does not work, you can reboot GALSPECT by powering down 
+(turn the key) {\it for 1 minute}.  Power up and try again. 
+
+	{\bf DO NOT REBOOT GALSPECT UNLESS ABSOLUTELY NECESSARY}.
+Generally speaking, it is only absolutely necessary when 
+the {\it /var/diag} test fails.
+
+\subsection{Overflows}
+
+	If the input gets too strong there are warning messages about
+overflows. For narrowband spectra these messages contain the string
+MLFS, in which each letter represents an internal digital operation,
+followed by a four digit number, one digit for each operation. All
+digital operations are done in integer arithmetic, and overflow means
+just that. When overflow occurs, the number saturates at the maximum
+value and there is no wraparound. The digits take on values from 0 to 3,
+with larger numbers being increasing severity.
+
+	For narrowband spectra, the operations are: \begin{enumerate}
+
+	\item {\bf A} means the analog to digital converter.  The ADC
+is overflowing (saturating) when this is set.
+
+	\item {\bf M} means the digital Mixer. Dan says that saturation
+is less serious than for the other processes. 
+
+	\item {\bf L} means the digital Low Pass Filter. 
+
+	\item {\bf F} means the Fourier transform computation.
+
+	\item {\bf S} means the accumulator (Sum).
+
+\end{enumerate}
+
+	The meanings of the numbers are: \begin{enumerate}
+
+\item {\bf 0} means almost perfect  (0-15 overflows during 1s intergration)
+
+\item {\bf 1} means pretty good (16-255 overflows during 1s integration)
+
+\item {\bf 2} means pretty bad  (256-4095 overflows during 1s integration)
+
+\item {\bf 3} means horrible ($>=$ 4096 overflows during 1s integration)
+
+\end{enumerate}
+
+\noindent For wideband spectra there are only two relevant overflow
+parameters, {\bf F} and {\bf S}. 
+
+	Normally, when centered on Galactic HI, GALSPECT's wide (100
+MHz) band covers about 1388 to 1488 MHz. Every 12 seconds the SJU radar,
+centered at 1350 MHz, partially saturates the RF electronics and causes
+saturation problems at the 1 level. These are not serious. It is
+surprising if you don't see error messages every 12 seconds.  This can
+change depending on time of day, azimuth angle, and possibly other
+parameters.
+
+	Normally, when the EGALFA people are observing, GALSPECT's
+wideband is centered lower by about 30 MHz. The SJU radar comes directly
+into the wide band and produces saturation problems at the 3 level,
+which is very serious. But this {\it does not indicate a problem with
+GALSPECT} and you should just keep observing. 
+
+	GALSPECT has a few birdies. One is at the center channel, i.e.\
+baseband DC. You'll need to interpolate over this, or center the lines
+away from band center.
+
+\subsection{Missing Records in the FITS output file.} GALSPECT writes
+out about 2 GB per hour. If the output filesystem is being stressed by
+another user, GALSPECT might complain that it has missed writing out
+some records. This is serious: you are not recording data! Tell Arun;
+this has happened before and he has tried to arrange that it will never
+happen, so he is familiar with the problem and needs to know about it. 
+If you want to investigate yourself, then stop GALSPECT and take a look
+at the activity on your output file system. 
+
+\subsection{What Time Is It?}
+
+%\clearpage
+
+	If there is a problem with time, check that the machine time on
+galfa is NTP locked:
+
+\begin{verbatim}
+           ntpdc galfa1.naic.edu
+           > peers
+
+remote           local      st poll reach  delay   offset    disp
+=======================================================================
+*mosquito.naic.e 192.231.93.131   1  512  377 0.00104  0.000107 0.00780
+=cuca.naic.edu   192.231.93.131  16 1024    0 0.00000  0.000000 0.00000
+ntpdc>
+
+\end{verbatim} 
+
+The offset should be within a few ms; here, it is off 0.1 ms.
+
+\subsection{Error setting frequency}
+
+If you try to set levels and get:
+
+\begin{verbatim}
+LO2: Set failed, got back: ERROR setting freq
+\end{verbatim}
+this is a  serious problem and means that galfa1 can not talk properly to
+wappserv to obtain observing information.
+This error happened twice in May 2005 and both times required
+restarting of the program gpibsock.
+This should be done by Arun or Phil and not during an observing session.
+The program that has to be restarted is called 
+/share/wappsrc/bin/start\_gpib and it's on wappserv.
+
+
+\section{ THE LO ARRANGEMENT FOR GALSPECT} \label{lo}
+
+\subsection{ Frequencies}
+
+	GALSPECT is a baseband spectrometer that samples complex inputs,
+meaning that it separates negative and positive frequencies. Thus the
+baseband center of each GALSPECT spectrum is DC. The IF is mixed with
+the second LO, called $LO2$. The wideband baseband center frequency of
+DC corresponds, at IF, to the frequency of $LO2$. The narrowband baseband
+center frequency of DC corresponds, at IF, to the frequency of $LO2 -
+digitalmix$, where $digitalmix$ is digitally generated within GALSPECT. 
+
+\begin{figure}[!h]
+\begin{center}
+\includegraphics[width=4in]{galspect1fig.ps}
+\end{center}
+
+\caption{IF and RF frequencies for GALSPECT. $LO1 = 1695.4$ MHz,
+$LO2=256.25$ MHz, $digitalmix=-18.75$ MHz.}
+\end{figure}
+
+	Suppose you are observing the HI line at 1420.400 MHz (for this
+example, rounded from 1420.405752 MHz and no Doppler correction) and you
+want it centered in the narrowband spectrum. To accomplish this, set the
+first LO to
+
+$$ LO1 = 1695.400 \ {\rm MHz} =1420.400+275.000 \ {\rm MHz} $$
+
+\noindent This makes the IF line frequency 275.000 MHz. The IF center of
+the wideband (${\rm width}=100$ MHz) GALSPECT spectrum is at the
+frequency of $LO2$, normally set to 
+
+$$ LO2 = 256.250 \ {\rm MHz} $$
+
+\noindent and the IF center of the narrowband (${\rm width}={100 \over 14} =
+7.142857$\dots \  MHz) is at $ LO2 - digitalmix$. Normally, $digitalmix =
+-18.75$ MHz, so the narrowband IF center frequency is normally
+
+$$ LO2 - digitalmix = 256.25 - (- 18.75) = 275.000 \ {\rm MHz} $$
+
+\noindent At RF, the wideband spectrum is centered at 1439.150 MHz and
+the narrowband one at 1420.400 MHz. 
+
+	These frequencies are set as follows: \begin{enumerate}
+
+	\item The $LO1$ frequency is set by the observing software.
+
+	\item The $LO2$ frequency is set by the -lo2 commandline option. The
+synthesizer is actually set to twice the LO2 frequency to account for 
+the way the mixers operate. You just need to specify -lo2 in {\it
+gdiag} and this will also set the synthesizer frequency
+correctly. Also, remember to specify -lo2 option for setting levels
+with {\it gdiag -newdac=10 -lo2=256.26}.
+
+	\item The offset between centers of the wideband and narrowband
+spectra, --18.75 MHz in this example, is the quantity $digitalmix$. You
+can set it two ways, one {\it gdiag --mix=nn} and the other with the {\it
+w} option in {\it vncviewer}. There are 32 possible values, spaced by
+$100 \over 32$ MHz. For $nn < 16$ $digitalmix$ is negative, and for $nn
+\ge 16$  $digitalmix$ is positive. The default value is -18.75 MHz.
+
+\end{enumerate}
+
+	These relationships are illustrated in the Figure.
+
+
+\subsection{Channels}
+
+	Both GALSPECT's wideband and narrowband spectra have RF
+frequency increasing with channel number.  The wideband spectra has 512
+channels and the center channel is number 256 (counting from zero). 
+This wideband channel has a big DC spike. 
+
+	Each narrowband spectrum has 8192 channels in the Fourier
+transform computation.  When writing out to a file, 513 are removed
+and replaced by other numbers (512 are the wideband
+spectrum; the 512th is a flag). This leaves 7679 channels in the
+narrowband spectrum. The center channel is number 3839 (counting from
+zero), and again RF frequency increases with channel number.
+
+
+\section{ OPTIONS FOR {\it gdiag} AND {\it vncviewer}} \label{doc}
+
+	You can get this list by invoking {\it gdiag} with no options.
+
+\begin{verbatim}
+Usage: gdiag [options]
+
+Main operating modes
+    -adc       Print out buffer of ADC samples as text
+    -rfft      Plot real FFT of ADC channel samples
+    -cfft      Plot complex FFT of ADC channel samples
+    -scope     Plot oscilloscope view of ADC samples
+    -patt      Pattern test for data acquisition
+    -dump      Print galfa acquisition as text
+    -galfa     Plot galfa data and write FITS file
+    -run       Collect galfa data and write a FITS file
+    -dac       Set DACs for input level of f dBM
+
+Other options
+    -vnc       Run as VNC server instead of console
+    -avg=n     Average interval for histograms and FFTs
+    -max       Add max-hold line FFT displays
+    -input=n   Take input from channel n
+    -ppdb=f    Pixels per dB for vertical scale
+    -adcfreq=f Use f as ADC sample frequency (MHz)
+    -nshift=n  Set upshift of narrowband PFB before acc
+    -wshift=n  Set upshift of wideband PFB before acc
+    -npfb=x    Set narrowband PFB downshift vector
+    -wpfb=x    Set wideband PFB downshift vector
+    -beam=n    Select beam for single beam operations
+    -scram	   Listen to the network with the LOs
+    -mix=0..31 Select mixer for narrowband
+    -ta=f      Signal generator A frequency
+    -tb=f      Signal generator B frequency
+    -lpf=x     Use LPF output instead of ADC for time domain displays
+    -ppsint    Beam 0 gets PPS from internal source
+    -proj=s    Project portion of filename for FITS dump file
+    -sdiv=n    Number of seconds per FITS file
+    -time=n    Run --run for n seconds
+    -level=f   RMS units for analog level setting
+
+During graphical operation
+    Press `q' to quit program
+    Press `p' to create raw image file in /tmp
+    Press `r' to toggle max-hold
+    Press `a' to toggle through galfa display modes
+    Press `0-6' to select beam in galfa display
+    Press `c/v' to modify pixels per dB on log display
+    Press `z/x' to change pre-accum shift in galfa display
+    Press `,/.' to scroll through narrow band displays
+    Press `</>' to scroll faster through narrow band displays
+    Press `o' to swap drawing order for polarizations
+    Press `m/n/b' to manually move marker
+    Press `w' to change mix frequency for narrowband
+    Press `K/L' to zoom in/out x-axis in narrowband displays
+    Press `d/f' decrease/increase PFB downshift vector
+    Press `h' to toggle linear/log vertical display
+
+Be careful not to hit `w' accidentally because it changes the mixer frequency 
+and can cause serious problems.
+
+\end{verbatim}
+
+\section{ CHANGING THE PICTURE ON THE VNCVIEWER DISPLAY } \label{picture}
+
+	It is understood that astronomers can get really bored sitting in the control room for hours.
+Changing the small picture on the lower right corner of the vncviwer display can provide some entertainment.
+To do so, rename a JPEG file (use one with a black background for best results) to {\it egg.jpg} and
+{\it scp} it to the {\it /var} directory.  102x82 is a nice size for the
+mascot image.
+
+
+\end{document}
+		

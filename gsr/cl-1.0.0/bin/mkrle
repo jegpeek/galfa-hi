@@ -1,0 +1,246 @@
+#!/usr/bin/perl
+
+#
+# $Id: mkrle,v 1.2 2001/10/26 03:25:10 jeff Exp $
+#
+
+use Getopt::Long;
+use open  IO => ":bytes";
+
+$opt_fn             = "png.png";
+$opt_meth           = "rle64";
+$opt_out            = "splash";
+$opt_xoff           = 0xffff;
+$opt_yoff           = 0xffff;
+$opt_back_r         = 0;
+$opt_back_g         = 0;
+$opt_back_b         = 0;
+$opt_mode           = 0x111;  # vesa mode, 640x480x16 565 RGB
+$opt_bg             = 0;
+$opt_cmdline        = "";
+
+$cmdline = join " ", @ARGV;
+
+# $opt_mode should work with any of the VESA true color frame buffer
+# modes if the graphics card supports it.
+#
+# VESA video mode
+#
+# Only true color modes are supported
+#
+# 0x110    640x480    1:5:5:5
+# 0x111    640x480    5:6:5
+# 0x112    640x480    8:8:8
+# 0x113    800x600    1:5:5:5
+# 0x114    800x600    5:6:5
+# 0x115    800x600    8:8:8
+# 0x116    1024x768   1:5:5:5
+# 0x117    1024x768   5:6:5
+# 0x118    1024x768   8:8:8
+# 0x119    1280x1024  1:5:5:5
+# 0x11a    1280x1024  5:6:5
+# 0x11b    1280x1024  8:8:8
+#
+#
+if (!GetOptions(
+        'png=s'         => \$opt_fn,
+        'meth=s'        => \$opt_meth,
+        'out=s'         => \$opt_out,
+        'xoff=i'        => \$opt_xoff,
+        'yoff=i'        => \$opt_yoff,
+        'r=i'           => \$opt_back_r,
+        'g=i'           => \$opt_back_g,
+        'b=i'           => \$opt_back_b,
+        'mode=s'        => \$opt_mode,
+        'bg'            => \$opt_bg,
+        'cmd=s'         => \$opt_cmdline,
+    )) 
+{
+    print STDERR <<USAGE;
+
+    Generate image file for compact flash card
+        
+    mkrle [options] 
+        [--png=n]           PNG file to process
+        [--meth=method]     RLE method (rle64 is only choice so far)
+        [--out=file]        output file
+        [--xoff=n]          X offset for image display (default is center)
+        [--yoff=n]          Y offset for image display (default is center)
+        [--r=n]             Red portion of background color
+        [--g=n]             Green portion of background color
+        [--b=n]             Blue portion of background color
+        [--mode=n]          VESA graphics mode to use
+        [--bg]              Set background color from upper-left image pixel
+        [--cmd=string]      Extra command line options to linux kernel
+
+    For the rle64 method, the png can have no more than
+    64 different colors in the image.  The RLE format is simple.
+    There is a header followed by a 64-entry colormap table and
+    then a series of RLE entries.  The entries are 1 or 2 bytes.
+    The one byte entries consist of a 6-bit color index followed
+    and a 2-bit count of 1,2, or 3 pixel.  The 2-byte variety
+    consists of a 6-bit index with the 2-bit count set to 0 followed
+    by a byte with a pixel count of 1-256 pixels.
+
+USAGE
+    exit 1;
+}
+
+$opt_mode = hex($opt_mode);
+
+# Convert PNG file to PPM file, easy to parse
+#
+$pnm = `pngtopnm $opt_fn`;
+die "Invalid png image" unless length($pnm);
+
+# parse the file
+#
+$pnm =~ m/(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s(.*)/s;
+$magic      = $1;
+$width      = $2;
+$height     = $3;
+$max        = $4;
+$img        = $5;
+
+die "Bad PPM magic number" unless $magic eq "P6";
+die "File must have single byte pixels" unless $max == 255;
+die "Image length doesn't match header size" 
+    unless $width*$height*3 == length($img);
+
+# Make arrays of 0.255 pixel values
+# This is so clean with perl 5.8, do it clumsier way so that it
+# works with old versions of perl.
+#
+# @red = unpack '(Cxx)*', $img;
+# @grn = unpack '(xCx)*', $img;
+# @blu = unpack '(xxC)*', $img;
+#
+# Bleh...
+@x = unpack 'C*', $img;
+for($i=0; $i<=$#x; $i+=3) {
+    $red[$i/3] = $x[$i];
+    $grn[$i/3] = $x[$i+1];
+    $blu[$i/3] = $x[$i+2];
+}
+
+if ($opt_bg) {
+    $opt_back_r = $red[0];
+    $opt_back_g = $grn[0];
+    $opt_back_b = $blu[0];
+    printf("Background color set to (%d,%d,%d)\n",
+        $opt_back_r, $opt_back_g, $opt_back_b);
+}
+
+# Image header for splash
+#
+# struct {
+#     uint32      magic;
+#     uint16      size;         // in sectors includng header
+#     uint16      header_size;
+#     uint16      mode;
+#     uint16      width;
+#     uint16      height;
+#     uint16      xoffset;
+#     uint16      yoffset;
+#     uint8       back_r, back_g, hack_b;
+#     uint8       method;
+#     uint8       version;
+# }
+#
+
+$img = "";
+
+sub rle64_emit {
+    my $cnt = shift;
+    my $idx = shift;
+
+    if ($cnt < 4) {
+        $img .= chr(($cnt << 6) | $idx);
+    } else {
+        $img .= chr($idx) . chr($cnt & 0xff);
+    }
+}
+
+if ($opt_meth eq rle64) {
+    my %cmap = ();
+    for my $i (0 .. $#red) {
+        my $c = ($red[$i]<<16) | ($grn[$i]<<8) | $blu[$i];
+        $cmap{$c}++;
+    }
+
+    $i = keys %cmap;
+    die "$i colors in image, 64 max for rle64." if $i > 64;
+    $i=0;
+    for my $k (sort {$a <=> $b} keys %cmap) {
+        $cmap{$k} = $i++;
+    }
+
+    print "Found $i colors.\n";
+
+    $cnt = 0;
+    $cindex = 0;
+    for my $i (0 .. $#red) {
+        my $c = ($red[$i]<<16) | ($grn[$i]<<8) | $blu[$i];
+        my $index = $cmap{$c}; 
+        if ($cnt > 0) {
+            if ($cindex == $index) {
+                $cnt++;
+                if ($cnt == 256) {
+                    rle64_emit($cnt, $cindex);
+                    $cnt = 0;
+                }
+            } else {
+                rle64_emit($cnt, $cindex);
+                $cnt = 1;
+                $cindex = $index;
+            }
+        } else {
+            $cnt = 1;
+            $cindex = $index;
+        }
+    }
+    rle64_emit($cnt, $cindex) if $cnt > 0;
+
+    $cmapi = "";
+    @cmapx = ();
+    $i = 0;
+    for my $k (sort {$a <=> $b} keys %cmap) {
+        $cmapx[$i++] = $k;
+    }
+    for my $i (0 .. 63) {
+        $cmapi .= chr(($cmapx[$i]>>16)&0xff) . chr(($cmapx[$i]>>8)&0xff) .
+                chr($cmapx[$i]&0xff);
+    }
+
+    # Build splash image header
+    #
+    $magic = 0xbe345ac1;
+    $mode = $opt_mode;
+    $xoffset = $opt_xoff;
+    $yoffset = $opt_yoff;
+    $back_r = $opt_back_r;
+    $back_g = $opt_back_g;
+    $back_b = $opt_back_b;
+    $method = 1;    # rle64
+    $version = 1;
+
+    # Do it twice, first time makes a header so we can figure out its
+    # length.  Second time sets the length and makes a header with
+    # the right length included.
+    #
+    for (0..1) {
+        $header = pack 'LSSSSSSSCCCCCZ100', ($magic, $isize, $hsize, $mode, $width,
+            $height, $xoffset, $yoffset, $back_r, $back_g, $back_b,
+            $method, $version, $opt_cmdline);
+        $hsize = length($header);
+        $rawlen = $hsize + length($cmapi) + length($img);
+        $isize = ($rawlen + 511) >> 9;
+        $pad = 512*$isize - $rawlen;
+    }
+    $rleimg = $header . $cmapi . $img . (chr(0) x $pad);
+
+    open FD, ">$opt_out" or die "Cannot open output file $opt_file : $!";
+    print FD $rleimg;
+    close FD;
+}
+

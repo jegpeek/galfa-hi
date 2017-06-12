@@ -1,0 +1,19 @@
+
+
+;note.  if you export the gsr tree from arecibo to some other machine,
+;you must do the following:
+;
+;0. copy the file /share/galfa/.idlenv2.0 to your home directory and 
+;source it in your .cshrc file
+;
+;1. copy (recursively) the entire gsr2.0 tree to your machine.
+;
+;2. recursively copy the subdir '/pkg/rsi/local/libao/phil/' to your own machine
+;
+;3. copy recursively the subdir '/share/galfa/carlpath' to your own machine
+;
+;4. In the .idlenv2.0 file, replace the definitions of 
+;	GALFAPATH, CARLPATH, GSRPATH, TREETOP, PHILSTREE
+; below with the appropriate ones.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+

@@ -1,0 +1,126 @@
+pro zapft, frqin, ydata, degree, $
+        coeffs, sigcoeffs, yfit, sigma, nr3bad, ncov, cov, $
+        residbad=residbad, goodindx=goodindx, problem=problem, $
+        polycoeffs=polycoeffs, fcoeffs=fcoeffs, fpower=fpower, $
+        yfit_poly= yfit_poly, yfit_fourier=yfit_fourier, $
+	times=times, sigtimes=sigtimes, deltat=deltat, $
+	verbose=verbose
+
+;+
+;ZAPFT -- zap a single fourier component from a spectrum
+;
+;CALLING SEQUENCE:
+;ZAPFT, frqin, ydata, degree, times, $
+;        coeffs, sigcoeffs, yfit, sigma, nr3bad, ncov, cov, $
+;        residbad=residbad, goodindx=goodindx, problem=problem, $
+;        polycoeffs=polycoeffs, fcoeffs=fcoeffs, fpower=fpower
+;
+;INPUTS:
+;       FRQIN, the array of input freqs for the spectrum
+;       YDATA, the array of spectral points
+;       DEGREE, the degree of the polynomial to fit
+;
+;OUTPUTS:
+;       COEFFS, the array of fitted coefficients. the first (degree+1)
+;coefficients are for the polynomial; the remaining ones are paired,
+;the number of pairs is equal to the nr of elements in times. the first
+;member of each pair is the cosine term, the second the sine.
+;       YFIT, the fitted datapoints
+;       SIGMA, the sigma of the fitted points
+;       NR3BAD, the nr of bad points on the last iteration. should be zero.
+;       NCOV, the normalized covariance matrix
+;       COV, the covariance matrix
+;
+;########################## IMPORTANT ############################
+;ALL COEFFS ARE DERIVED FOR THE QUANTITY [FRQIN- MEAN( FRQIN)], NOT FRQIN!!
+;########################## IMPORTANT ############################
+;
+;OPTIONAL INPUTS:
+;       RESIDBAD: toss out points that depart by more that this times sigma.
+;e.g., if residbad is 3, it eliminates points haveing resids gt 3 sigma
+;
+;OPTIONAL OUTPUTS:
+;       GOODINDX, the indx of good points (the points that it actually
+;included in the fit)
+;       PROBLEM, nonzero if there is a problem
+;       POLYCOEFFS, the set of coeffs in the polynomial fit
+;       FCOEFFS, the set of coeffs that are fourier pairs
+;       FPOWER, the power in each fourier component (quad sum of cos and sin)
+;       YFIT_POLY, THE fitted polynomial curve 
+;       YFIT_FOURIER, THE fitted fourier curve
+;	TIMES, the time delay associated with the fourier component
+;	SIGTIMES, the uncertainty in the time delay
+;	DELTAT, the time resolution.
+;	VERBOSE
+;
+;       NOTE: yfit= yfit_poly+ yfit_fourier
+;
+;EXAMPLE OF USE:
+;       you've got a lousy ripple in the spectrum. the ripple is represented
+;by yfit_fourier. ydata-yfit_fourier is the ripple-free spectrum.
+
+;HOW IT WORKS:
+;	this is hard wired for GALFA and assumes times are between
+;5.3 and 6.3 microsec.
+;	it takes 7 times centered near 5.8 microsec and does the poly
+;plus fourier fit. you should specify residbad = 3 or so so that it eliminates
+;the strong H line or interference from the fit. it does this fit, then
+;takes a weighted avg of the powers in the 7 times to find the peak time.
+;then it redoes the fit using a single fourier component.
+;
+;COMMENT:
+;	the fourier term should multiply the data, not add onto it. 
+;
+;HISTORY: carl h, 24june2005
+;-
+                                                                                
+
+
+fsmpl= (max(frqin)-min(frqin))/(n_elements( frqin)-1.)
+tmax= 1./fsmpl
+deltat= tmax/(n_elements( frqin)-1.)
+
+times= 5.3+ findgen(7)*deltat
+
+poly_ft_fit, frqin, ydata, degree, times, $
+        coeffs, sigcoeffs, yfit, sigma, nr3bad, ncov, cov, $
+        residbad=residbad, goodindx=goodindx, problem=problem, $
+        polycoeffs=polycoeffs, fcoeffs=fcoeffs, fpower=fpower
+                                                                                
+tfit_idl=gaussfit( times, fpower, gcoeffs, nterms=3, sigma=siggcoeffs)
+
+if keyword_set( verbose) then begin
+	yra= [0, 2.*max(fpower)]
+	plot, times, fpower, psym=-4, yra=yra
+	print, 'solution of 7 gives center as ', gcoeffs[1]
+;	stop
+endif
+
+times=  gcoeffs[1]+ (findgen(8)-3.5)*deltat/4.
+fpowera= fltarr( 8)
+
+FOR NR=0,7 DO BEGIN
+poly_ft_fit, frqin, ydata, degree, times[nr], $
+        coeffs, sigcoeffs, yfit, sigma, nr3bad, ncov, cov, $
+        residbad=residbad, goodindx=goodindx, problem=problem, $
+        polycoeffs=polycoeffs, fcoeffs=fcoeffs, fpower=fpower, $
+        yfit_poly= yfit_poly, yfit_fourier=yfit_fourier
+fpowera[ nr]= fpower
+;print, nr
+ENDFOR
+
+;stop ;----------------
+tfit_idl=gaussfit( times, fpowera, gcoeffs, nterms=3, sigma=siggcoeffs)
+
+times= gcoeffs[1]
+sigtimes=siggcoeffs[1]
+
+poly_ft_fit, frqin, ydata, degree, times, $
+        coeffs, sigcoeffs, yfit, sigma, nr3bad, ncov, cov, $
+        residbad=residbad, goodindx=goodindx, problem=problem, $
+        polycoeffs=polycoeffs, fcoeffs=fcoeffs, fpower=fpower, $
+        yfit_poly= yfit_poly, yfit_fourier=yfit_fourier
+
+return
+
+end

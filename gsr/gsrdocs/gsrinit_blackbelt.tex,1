@@ -1,0 +1,531 @@
+\documentclass[psfig,preprint]{aastex}
+                                                                                
+\begin{document}
+                                                                                
+\title{MH AND LSFS: BLACK-BELT DETAILS}
+
+\author{Carl Heiles (\today)}
+
+\tableofcontents
+
+\section{INTRODUCTION}
+
+	This document is intended for people who know their way around
+the first two stages of GSR reduction, which are the generation of
+\verb$mh$ and \verb$lsfs$ files. It presents details that one might wish
+or need to know to understand how things are done and what the potential
+problems and difficulties are, or need to modify the software. In other
+words, it's for the {\it black-belt}. Accordingly, we don't  spend time
+defining a lot of things whose definitions can be found elsewhere, or
+even definitions of variables and discussion of some detail that exist
+in the documentation within the IDL procedures. In other words, use this
+in combination with the existing documentation within the procedures.
+One convention: ``nb'' and ``wb'' are short for ``narrowband'' and
+``wideband'', respectively.
+
+\section{THE FITS FILE AND ITS $m1$ STRUCTURE} \label{fitsfile}
+
+	The fits files are read by the Goddard procedure \verb$mrdfits$. 
+{\it Important note:} a related procedure is \verb$mrd_hread.pro$, the
+Goddard version of which failed on one of our files.  To avoid this
+failure mode we must use a modified version which resides in
+\verb$...gsr/procs/init/hdr$, (putting it first on our IDL path). 
+
+	Convention: in this document we often specify paths by writing
+three dots before \verb$gsr$.  The subdirectory \verb$gsr$ is the top of
+the tree that contains all software used in the GALFA data reduction,
+and it might be installed on any machine (such as your own or one at
+Arecibo).  At Arecibo, the \verb$gsr$ directory tree has a version
+number suffix, and it is located in the \verb$/share/galfa/$, so at the
+present time of writing (25 Oct 2005), at Arecibo what we mean by
+\verb$...gsr/$ is \verb$/share/galfa/gsr1.1/$. 
+
+	We read the fits file and create a structure called \verb$m1$. 
+This is an array of length equal to the number of records in the fits
+file, which are taken once per second.  Normally the fits file is 10
+minutes long and no datapoints are skipped, so normally it's
+\verb$m1[600]$.  However, sometimes there are fewer elements because
+datapoints are skipped and sometimes the file is cut short because
+GALSPECT was stopped. 
+
+	The details of the \verb$m1$ structure are given in Jeff Mock's
+code that writes it; there's a copy in
+\verb$...gsr/cl-1.0.0/src/gdiag/gfits.c$.  A {\it complete} set of Jeff's
+software is on \verb$mofongo$ in \verb$/mnt/disk2/jmock$.  Some of the
+more important tags in the \verb$m1$ structure include the following:
+\begin{enumerate}
+
+	\item \verb$data$ and \verb$g_wide$ are the 7679 and 512
+channel nb and wb spectra, in long integers with offset of $-2^{31}$. 
+
+	\item \verb$g_seq$ is a sequence number. I'm not sure of the
+zero point. The sequence number is incremented for each datapoint.
+Sometimes the net is too busy to write a datapoint, which is skipped. If
+so, the recorded sequence number will skip. That is, the sequence
+number applies to the datapoint whether or not is was recorded, so you
+can check for missing datapoints by checking the sequence number.
+
+	\item \verb$crval2a, crval3a, crval2b, crval3b$ are ra, dec, az,
+and za respectively. There are time delays so that they are not
+absolutely accurate. Correcting these inaccuracies is one of the main
+reasons for the \verb$mh$ files.
+
+	\item \verb$alfa_ang$ is the rotation angle of the ALFA turret.
+
+	\item \verb$g_mix$ is the internal narrowband mixer frequency
+(lo3), known as \verb$digitalmix$.  The GALFA memo ``GALFA Spectrometer:
+Setup, Operations, Basics'' explains how to set \verb$g_mix$. 
+
+	\item \verb$g_lo1$ and \verb$g_lo2$ are the first and second LO
+frequencies.  See GALFA memo ``GALFA Spectrometer: Setup, Operations,
+Basics'' for an explanation of the mixing system. 
+
+	\item \verb$g_postm$ is ra, dec and \verb$g_azzatm$ the az, za,
+but not at the exact 1 sec tick; they are corrected in the \verb$mh$
+header. 
+
+\end{enumerate}
+
+\section{GENERATIKNG THE MH FILES: GSR/PROCS/INIT/HDR} \label{init/hdr}
+
+	These programs generate \verb$mh$ files, which contain the
+\verb$mh$ and \verb$mx$ structures. The \verb$mh$ structures contain
+accurate time and position information and the \verb$mx$ structures
+contain statistical information on data quality.  The primary function
+of the \verb$mh$ structure is to define times and positions accurately.
+The values in the original data from the fits file are not accurate
+because of delay problems in obtaining and transmitting the data over
+the net.
+
+	Generating the \verb$mh$ file is normally done using the shell
+\verb$mh_wrap.pro$, which reads the list of fits files, invokes the
+workhorse \verb$m1_hdr.pro$ for each one, and writes the associated
+\verb$mh$ save file for each one.  See the document ``HOW TO GENERATE MH
+AND LSFS FILES''.
+
+\subsection{Obtaining the RF and IF frequencies}
+
+	The procedure \verb$bbifdftprops.pro$ calculates rf and if
+frequencies for each channel of the wb and nb spectra. It also returns
+the theoretical bandpasses of those spectra. The inputs are all in the
+\verb$m1$ and \verb$mh$ structures except for the sidebands, which you
+must specify. See this procedure's documentation for details. You have
+to specify sidebands. Call the procedure this way: 
+\begin{verbatim}
+sb1= -1.d
+sb2= 1.d
+sb_bb= -1.d
+lo2= m1[ 0, nspLO].g_lo2/1.d6
+digitalmix= m1[ 0, 0].g_mix/1.d6
+lo1= m1[ 0,nspLO].g_lo1/1.d6
+bbifdftprops, sb1, sb2, sb_bb, lo1, lo2, digitalmix, $
+  rffrq_wb, if1frq_wb, bbfrq_wb, rffrq_nb, if1frq_nb, bbfrq_nb, bbgain_dft_nb
+\end{verbatim}
+\noindent Here, \verb$m1$ is the structure that is read from the fits
+file; alternatively, you could get the l.o.\ frequency from the 
+\verb$mh$ structure.
+
+\subsection{The $mh$ structure}
+
+	The \verb$mh$ structure is defined by \verb$mhdefine.pro$. The
+important values are calculated in \verb$m1_hdr.pro$. The important
+tags include: \begin{enumerate}
+
+\item Various tags with the embedded word ``stamp''. These are accurate
+values calculated from the sequence number \verb$m1.g_seq$ (a running
+count of the number of 1-second GALSPECT records written since midnight
+AST on a given day) using a complicated and involved least squares fit.
+These include: \begin{enumerate}
+
+	\item \verb$utcstamp$, the UTC since the beginning of 1971 in
+seconds; 
+
+	\item \verb$julstamp$, the Julian date at UTCSTAMP (Julian days
+are for UTC in Greenwich); 
+
+	\item \verb$lstmeanstamp$ and \verb$lstappstamp$, the mean and
+apparent LST for the particular \verb$utcstamp$. \end{enumerate}
+
+\item Four positions with the embedded word ``halfsec''. GALSPECT
+records data once each second. During this second the telescope usually
+moves; we average the positions at the beginning and end of each second
+to obtain the mean position, equal to the position halfway through the
+one second interval; thus the term ``halfsec''.  These positions are
+accurate, having been corrected for sample jitter. Units are degrees for
+az, za, and dec; and hours for ra.
+
+\item \verb$vlsr$ and \verb$vbary$, the velocity of the telescope wrt LSR
+and the barycenter, respectively. Calculated using \verb$chdoppler.pro$.
+	
+\item \verb$pwr_wb$ and \verb$pwr_nb$, the spectrum-integrated wb and nb
+powers in the original data units.
+
+\item \verb$errs$, a set of decoded (human-readable) errors from the
+original \verb$m1.g_err$ (which is not human-readable). \verb$errs$ is a
+[6,2,7] array for each datapoint, 6 values of error for each of the 2
+pols and 7 beams. \verb$mh.errs$ is generated by
+\verb$error_decode.pro$, whose documentation describes the meanings in
+detail. 
+
+\item \verb$versiondate$, the date of the software version (yyyymmdd). 
+BE SURE TO CHANGE THIS IF YOU MODIFY THE SOFTWARE! \end{enumerate}
+
+	In addition, most of the m1 header array data are repeated in
+the \verb$mh$ structure.
+
+\subsection{The $mx$ structure}
+
+	To {\it interpret} and {\it examine} the quantities in the
+\verb$mx$ structure, you can use the programs discussed at length in the
+document ``DOES EVERYTHING WORK PROPERLY? DO THESE CHECKS ON EVERY DAY'S
+DATA!!''.  There's also a first attempt at a printed version for the
+diagnostics in \verb$listmx.pro$ .  This also discusses the diagnostics,
+and should be read before going further here. 
+
+	The \verb$mx$ structure is defined by \verb$mxdefine.pro$. The
+important values are calculated in \\ \verb$rxdiagnostics.pro$. It analyzes
+the time series of \verb$pwr_wb$ and \verb$pwr_nb$. The important tags
+include: \begin{enumerate}
+
+	\item \verb$julstamp$, as defined above for the \verb$mh$ structure
+
+	\item \verb$ccfwb$ and \verb$ccfnb$, the CCF between all pairs
+of the 14 receivers
+
+	\item \verb$feedbadwb$ and \verb$feedbadnb$, an analyzed
+version of  \verb$ccfwb$ and \verb$ccfnb$ to provide a
+simply-interpretable result; this is currently not reliable or useful.
+
+	\item \verb$rmwratiowb$ and \verb$rmsrationb$. for each receiver,
+use a 19-second median filter to remove drifts; remove data whose
+residual exceeds $3\sigma$; select only the records not in calibrations.
+Then, for each receiver calculate its rms divided by its mean and 
+divide by the mean of that modified data stream. 
+
+	\item \verb$rxradarwb$, \verb$rxradarnb$, for each receiver a
+2-element array, the first element is the period in seconds and the
+second is the amplitude of that Fourier component divided by the mean
+power. 
+
+	\item \verb$sjuwv$ and \verb$sjunb$, the crosscorrelation peak
+of a 12-s pulse train with the median-filtered \verb$pwr_wb$ and
+\verb$pwr_nb$, divided by the mean values of those pwr arrays. Negative
+values are preserved in case the radar power saturates the receiver
+gain. 
+
+	\item \verb$versiondate$, the versionddate of the software.
+\end{enumerate}
+
+\section{ OBTAINING THE IF BANDPASS FROM LEAST-SQUARES FREQUENCY
+SWITCHIKNG (LSFS). FIRST, DETAILS OF THE METHOD}
+\label{lsfsmethod}
+
+	Least Squares Frequency Switching (LSFS) allows us to solve for
+the i.f.\ gain spectrum. We first do this for the wb spectra and then
+incoporate that rseult ito the result for the nb spectra. The theory of
+the LSFS technique is discussed in the Arecibo technical memo {\it
+Obtaining the I.F.\ Bandpass Using Least-Squares Frequency Switching
+(LSFS)}. The technique uses a least squares fit, whicfh in turn uees
+matricess whosee dimensionss are proportional to the number of
+chasnnels. The 512 channels of the wb spectra work fine with this
+technique, but the 7679 channels of the nb spectra are too
+computationally intensive. For this reason we use a somewhat complicated
+interpolation technique for the nb spectra, which we now describe.
+
+	The nb spectra have 7679 channels, but we deal wiih a binned
+480-channel version in the actual LSFS procedure itself; afterwards, we
+rather involved interpolation procedure to regain the 7679 channels. 
+There are two reasons for this somewhat cumbersome approach. One, 7679
+channels makes the LSFS matrices prohibitively large. Two, the smallest
+frequency difference in the series of 7 l.o.\ LSFS frequencies is about
+195 kHz, which corresponds to 224 nb channels.  Thus, the LSFS technique
+proviides no information on the frequency structure within this
+224-channel range.  We assume that there is no structure on that
+frequency scaled and in \verb$ggnb_recon$ do a fancy-dancy interpolation
+to recover the nb i.f.\ gain for all 7679 channels. 
+
+	The complete determinatino of the 7679-channel nb gain spectrum
+goes as follows: \begin{enumerate}
+
+	\item For those nb spectra used in the LSFS fit, we reduce the
+7679-channel sspectra to 480-channel spectra by binning groups of 16
+channels in a 7680-channel spectrum (note that ${7680 \over 480} =
+16.0$). Our original spectra have only 7679 channels, so we generate an
+additional dummy channel  one on one end by simply replicatiing the
+original endpoint.
+
+	\item In the IDL procedure \verb$lsfs.pro$, we apply the normal
+LSFS technique to these 480-channel binned nb spectra. We use only 6 of
+the 7 l.o.\ frequencies because the $7^{th}$ is too far displaced. In
+the sortware we call this LSFS-derived nb gain spectrum $ggnb_{480}$; it
+is a 480-channel representation of the actual nb gain spectrum $ggnb_*$.
+In fact, it is not a very good representation because it looks like a
+series of sawteeth (Figure \ref{sawtooth}). The sawtooth pattern occurs
+because the minimum l.o.\ frequency displacement is about 14 of these
+binned-by-16 nb channels (224 of the original nb channels), so there is
+no information on structure within the 14-channel intervals.
+
+	\item In the IDL procedure \verb$lsfs.pro$, we also apply the
+LSFS technique to the original 512-channel wb LSFS spectra. In the
+software we call this LSFS-derived wb gain specgtrum $ggwb_{512}$; it is
+a 512-channeel representation of the actual wb gain spectrum $ggwb_*$.
+
+	\item We assume that the actual ng gain $ggnb_*$ and its
+480-channel counterpart $ggnb_{480}$
+are equal to the product of three quantities, to wit: 
+
+\begin{equation}
+ggnb_* = ggnb_{th} \ ggwb_* \ p_{corr} \ ,
+\end{equation}
+
+\noindent where $ggnb_{th}$ is the theoreetical nb gain spectrum,
+$ggwb_*$ the actual (measured) wb gain spectrum, and $p_{corr}$ is a
+2-degree polynomial correction function. We are justified in this
+assumption because: \begin{enumerate}
+
+	\item The i.f.\ analog signal goes through the wb filter and is
+then digitized. The 100 MHz wide wb spectrum is calculated from the
+resultling digital time series. The nb data are generated by putting the
+same wb time series through a digital passband filter whose width is
+${100 \over 14}$ MHz. The ``theroetical nb gain spectum'' $ggnb_{th}$ is
+the shape of this passband filter, and it is known precisely because it
+is defined mathematically and numericaally on exactly the sasme time
+series used for the wb data. 
+
+	\item Thus the i.f.\ analog signal goes through two filters, the
+wb and the nb filters. In principle, the resultling nb filter shape
+$ggnb_*$ should be exactly equal to the product of these two filters.
+However, there are small differences, presumably because of system
+imperfections of some sort, which is why we need the polynomial
+correction function $p_{corr}$. 
+
+\end{enumerate}
+
+	\item We least-squares fit for these 3 $p_{corr}$ coefficients.
+To accomplilsh this, we first require values of $ggwb_*$ at the 480 nb
+frequencies. The original 512 wb channels are much more widely spaced in
+freqeuency than the nb channels: 36 of the 512 wb channels lie within
+the nb frequency range. We fit a 6 degree polynomial to these 36 wb
+channels, which allows us to evaluate the values of $ggwb_*$ at each of
+the 480 binned nb frequencies\footnote{These two polynomials are
+independent and unrelated. We determined that 2 and 6 degree polynomials
+are appropriate by visual inspectionn and experimentation.}. 
+
+	\item To determine the $p_{corr}$ coefficients we least squares
+fit the combination 
+
+\begin{equation} 
+corr = { ggnb_{480} \over ggnb_{th} \ ggwb_*} \ ,
+\end{equation}
+
+\noindent where the quantities in the denominator are evaluated at the
+same frequencies as those in the numerator.
+
+	\item Finally, we calculate $ggnb_*$ and its 7679-channel
+counterpart $ggnb_{7679}$ from
+
+\begin{equation}
+ggnb_{7679}= ggnb_{th} \ ggwb_* \ p_{corr} \ ,
+\end{equation}
+
+\noindent where the three quantities on the right hand side are
+evaluated at the 7679 freqeuencies of the nb spectrum.
+\end{enumerate}
+
+\section{ OBTAINING THE IF BANDPASS FROM LEAST-SQUARES FREQUENCY
+SWITCHIKNG (LSFS). NEXT, THE SET OF IDL PROCEDURES}
+
+\label{init/lsfs1}
+
+	This section generates \verb$lsfs$ save files, which use the
+SMARTF frequency switching calibration to generate the bandpass shapes
+and also the factors to approximately convert spectral numbers to
+temperature. The theory and practical details of the
+Least-Squares-Frequency-Switching (LSFS, a.k.a.\ SMARTF) are given in
+the \verb$galTechMemo_2005_01$ entitled ``Least Squares Frequency
+Switching''. An important detail concerning the nb spectra is discussed
+in \S \ref{lsfsmethod}.
+
+	We generate lsfs files using the \verb$lsfs_wrap$ procedure. 
+Its inputs include the path and array of fits files to be treated.  See
+the document ``HOW TO GENERATE MH AND LSFS FILES''. 
+
+\subsection{Manual selection of files within a given day for LSFS
+processing} \label{lsfsbyhand}
+
+	One problem that can occur: the software selects the LSFS files
+automatically, and these files are big.  If it selects too many the
+machine's memory will be exceeded.  If this happens you need to
+intervene by hand and restrict the number of fits files by using a
+shorter, hand-determined list.
+
+	You may need to manually select input files for LSFS if there
+are long stretches of contiguous LSFS calibration; loading all these
+fits files would exceed the computer's memory.  If you need to select
+the input files for LSFS manually, you produce a list of a few files
+that contain contiguous LSFS calibration data that will be all treated
+as one group and averaged together.  You use these as input to
+\verb$lsfs_shell$, which oversees the LSFS calibration by invoking
+\verb$lsfs$, which is the ``boss'' for the LSFS reduction; invoking
+\verb$ggnb_recon$, which reconstructs the nb bandpass; and writing out
+the save file. 
+
+\subsection{ The LSFS save files}
+
+The save file is of the form \\
+\verb$lsfs.yyyymmdd.tttttttttt.proj.nnnn.sav$ \\
+where \verb$tttttttttt$ is the \verb$utcstamp$ for the first LSFS record
+(that's the time in seconds since 1971), and the other parameters come
+from the fits file that contains the first LSFS record. The
+\verb$utcstamp$ is included to make it easier for future programs to
+select the nearest LSFS calibration.
+
+\subsection{The procedure \it lsfs.pro}
+
+	\verb$lsfs.pro$ has as input the set of fits files containing one
+group's worth of SMARTF data.  It returns both wb and nb i.f.\ filter
+shapes (\verb$ggwb[512,14,2]$, \verb$ggnb[480,14,2]$), the r.f.\ spectra
+at each of the 7 l.o.\ frequencies and cal on/off
+(\verb$rf4wb[512,14,7,2]$\footnote{The index order is [channels, 14
+receivers, 7 lo frequencies, and cal on/off].},
+\verb$rf4nb[480,14,7,2]$), the derived r.f.\ spectra over all frequencies
+covered by the 7 l.o.\ frequencies (\verb$rfwb[543,14,2]$,
+\verb$rfnb[543,14,2]$), calibration factors, the nb baseband frequencies
+for each channel (\verb$bbfrq_nb[7679]$), the nb theoretical bandpass
+shape (\verb$bbgain_dft_nb[7679]$), the r.f.\ frequencies for each
+channel (\verb$rffrq_wb[512]$, \verb$rffrq_nb[7679]$), and the cal
+deflections in original recorded units. 
+
+	As the boss, \verb$lsfs.pro$ invokes the following procedures:
+
+\subsubsection{ \it m1\_to\_m1s\_s0.pro} 
+
+	This takes the entire array of \verb$m1$ structures in the
+designated input files and filters them to make sure which are {\it
+really} LSFS, creating the new array \verb$m1s$. In doing this it
+discards all leading datapoints with CALON, all trailing ones with CALON
+in excess of 3 minutes (180 datapoints), and incorporates an estimated
+time delay for the l.o.\ to change. It returns the \verb$m1s$ structure
+for processing.
+
+	All of this would be better done in the program
+\verb$find_smartf$ because memory is an issue and we would be saving
+fewer unused \verb$m1$ datapoints in memory. This change should be
+incorporated sometime. 
+
+\subsubsection{ \it lsfs1.pro} 
+
+	This performs the awful job of deciding which records are indeed
+valid. It has to find 7 l.o.\ frequencies that are used in LSFS;
+determine which have cal ON and OFF; discard datapoints near the
+transitions, because the transitions don't occur on one-second ticks;
+and check to make sure that data really are LSFS and don't simply have a
+bunch of different l.o.\ frequencies that were used for a different
+purpose. I've tried to document the different tests within the code. 
+These tests are quite involved and complicated---if you have to work
+with them I hope the descriptions are adequate, but you will probably
+need to sample some parameter values when reducing real data to figure
+out what's really happening.
+
+	One slightly tricky part in processing the wb and nb spectra is
+arithmetically using the long integers, which are in the \verb$m1$
+structure from the fits file. You can't add many of these together
+without overflowing the long integers. And if you convert
+them individually to floats you lose accuracy; if you convert them to
+doubles it costs memory. See the code for the best technique.
+
+	One required operation that occurs in this program is averaging
+a number of one-second records together. To accomplish this in IDL we
+use the \verb$total$ function. You have to be careful with memory and
+computing speed, and the fact that the arrays are in long integers. To
+use \verb$total$ the best way: \\ \verb$total( long64( m1s.g_wide))$. Note the
+conversion from \verb$long$ to \verb$long64$---important!!
+
+\subsubsection{ \it carl9.pro}
+
+	\verb$carl9.pro$ does the actual LSFS solution, using the SVD
+technique described in \\ \verb$galTechMemo_2005_01$.  One important set
+of its inputs is the set of matrices and vectors involved with the SVD matrix
+math.  Those are called \verb$xmatrix$, \verb$wgts$, \verb$wgt_inv$, and
+\verb$xxinv_svd$, which correspond to the quantities $\bf X$, $\bf [W]$,
+$\bf { \left[1 \over W \right]}$, and {\boldmath {$\alpha \cdot X^T$}} in
+equations 28 and 29 of that memo.  These quantities are read from files on
+disk because they are computationally very expensive to calculate. 
+If you ever want to generate new ones, which would occur if you change
+the relative separations, number, or sequence of the LO frequencies used
+in the calibration, you need to generate new ones using
+\verb$xmatrixgen.pro$.  Here we don't give the details on how to use it. 
+In fact, it's not documented either; this needs work!
+
+	One important optional input is \verb$quiet$. If this is not
+set, you can watch the convergence of the iterations; it's kind of fun
+(for a while). It probably takes longer to plot than to calculate,
+so\dots
+
+\section{ GSR/PROCS/INIT/LSFS---CORRECTING DATA FOR IF BANDPASSES ETC}
+
+	After having derived the i.f.\ bandpasses we want to use them to
+get bandpass-corrected data---after all, that's the whole rationale for
+this mess! We do this with \verb$polycorr.pro$, which is normally
+invoked by \verb$m1polycorr.pro$.  Inputs to \verb$m1polycorr.pro$
+include the lsfs file name, which file contains the derived bandpasses,
+and the structure m1 which contains the spectra you want to
+bandpass-correct.  The important outputs that need explaining are
+generated by \verb$polycorr.pro$ and are detailed below. 
+
+	\verb$polycorr.pro$ does the work. It does the following:
+\begin{enumerate}
+
+	\item An important function is to use the wb spectra to
+baseline-correct the nb spectra.  We do this by polyfitting the wb
+spectra.  The polyfit coefficients need to carry over exactly from the
+wb to the nb spectra.  Each wb channel has the width of about 224 nb
+channels.  To match things up, we need to lump together 224 nb channels
+for each wb channel and be very careful about getting the centering
+right.  We do this by binning the rf frequencies of the nb spectra
+(called \verb$rffrq_nb$) to exactly (almost) match those of the wb
+spectra (called \verb$rffrq_wb$).  After this binning operation, the nb
+spectra match the shapes of the wb spectra to a truly remarkable degree
+of accuracy (which they should---because the nb spectra are digitally
+derived from the same digital data stream as the wb spectra, and in
+particular the nb filter shape is defined digitally). 
+
+	\item Each wb and nb raw spectrum is incremented by the long
+integer offset $2^{31}$, converted to float, and divided by its
+appropriate i.f.\ bandpass. 
+
+	\item There is a d.c.\ spike in channel 256 of each of the
+512-channel wb spectra; we interpolate over it.
+
+	\item We bin the nb spectra according to the above prescription,
+extract the $\sim 33$ nb binned channels that correspond to the wb ones,
+and derive the ratio of powers, $fctr= {nb \over wb}$. We multiply all
+wb spectra by this factor to get it on the same power scale as the nb
+spectra. 
+
+	\item \verb$fctr$ is the factor by which the original wb spectra
+(after bandpass correction) were multiplied to get them on the same
+scale as the nb spectra.  That is, the output spectra are called
+\verb$swb_c$ and \verb$snb_c$; \verb$swb_c$ and its pre-polyfit
+channel-integrated power \verb$pwb_uc$ have been scaled by \verb$fctr$,
+so you can recover the original unscaled spectra and powers by dividing
+the returned \verb$swb_c$ and \verb$pwb_uc$ by their appropriate
+\verb$fctr$. 
+
+	\item We fit an $n^{th}$ degree polynomial (input parameter
+\verb$degree$) to the wb spectrum and use the very same coefficients to
+correct the nb spectrum.  The wb spectrum is 100 MHz wide, the narrow
+about 7 MHz wide.  At the moment the default degree is 18.  This is a
+problem---instead of using a large degree we should use a smaller range
+in the wb spectrum.  {\bf THIS NEEDS INVESTIGATION--HIGH PRIORITY}. 
+
+\end{enumerate}
+
+\acknowledgements
+
+        This research was supported in part by NSF grant AST 04-06987    
+and by the NAIC.
+
+
+\end{document}
+		

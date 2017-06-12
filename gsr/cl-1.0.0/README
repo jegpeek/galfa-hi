@@ -1,0 +1,245 @@
+
+Jeff Mock
+jeff@mock.com
+2/21/4
+
+
+
+version 0.0.2
+2/29/4
+
+Incremental refinements throughout, Initial fpga image for 
+2v4000, test program for ADCs and PCI.
+
+version 0.0.3
+3/10/4
+
+First version hopefully suitable for SETI guys.  Local
+configuration moved to /var/rc.local.   Spectrum abalyzer
+and scope demo programs.
+
+version 0.0.4
+4/19/4
+
+First version with support for PFB testing.  xload knows
+how to use a 32-point PFB and display bar graphs using the
+PFB:
+
+    xload -xa      dump 8k PFB values
+    xload -xf      32-bar graph of power of PFB output
+    xload -xg 1 2  Two time domain graphs of two frequency bins
+
+version 0.0.5
+4/23/4
+
+More xload cleanups.  There is a script in /etc/makedisk
+that allows one to network boot the box using the p1.img
+file and run /etc/makedisk to turn /dev/hda into a bootable
+image of the current system using whatever device is in
+/dev/hda.  The means that the build is independent of 
+disk geometry if /etc/makedisk is used to make the bootable
+disk.
+
+The cf.img file (compact flash disk image) is still 
+dependent on the disk geometry stored in the makecf
+script, but this should now become depricated.
+
+/dev/hda can be a compactFlash card or a hard disk
+drive.
+
+version 0.0.6
+5/4/03
+
+Changed build so that scp is used to install web update
+files and tftpboot files accoding to environment variables
+(see image/makecf).
+
+
+version 0.0.1
+
+Top level for embedded linux system for compactFlash card on
+Ziatech ZT5550 CompactPCI CPU board.
+
+The system consists primarily of a 2.4.25 linux kernel, the uclibc
+C library (built as a shared .so library), and the busybox utilities.
+The root filesystem is built as a cramfs compressed read-only partition.
+The kernel is configured for use on the cPCI board with the
+appropriate ethernet driver.  The system runs a dhcp client and  
+sshd.  You can ssh into the box and get a reasonable shell
+(ash from busybox).
+
+The build is designed to put a small linux system on a Compact Flash card
+that looks like /dev/hda to the motherboard.
+
+The CF card boots using a new boot loader I wrote for the this system.
+jlo (Jeff's loader) knows how to load a kernel from a cramfs filesystem.
+The bootloader also sets the video mode to a VESA mode and puts up a
+splash screen.  The kernel is patched to configure /dev/fb0 in the mode
+set by the bootloader.
+
+The build requires about 2MB on the target CF card for a kernel,
+utilities, busybox, telnetd, sshd.  The build creates a CF
+card image with two copies of the system and a mechansim for updated the
+unused system image over the net using http, changing the default boot
+partition, and rebooting the system.  See the script in /bin/update on
+the target image.
+
+Building from scratch or building for the first time
+
+Most any reasonably modern linux distribution should be fine.
+The build environment makes a few assumptions about your system:
+    
+    A uclibc cross-compier (i386-linux-uclibc-*) should be installed
+    first.
+
+The tar distributions of the various components are expected to 
+be found in the dl directory. These aren't included by default
+with the distribution.  When you run make these files will be 
+fetched with wget, which might take awhile.  At this writing
+the following files are needed in dist:
+
+
+         1291488 Feb  4 03:57 busybox-1.00-pre7.tar.gz
+           24179 Feb 24  2002 cramfs-1.1.tar.gz
+           30652 Dec 27  2002 jlo-0.1.2.tar.gz
+        38081864 Feb 18 05:36 linux-2.4.25.tar.gz
+          792280 Sep 23 02:49 openssh-3.7.1p2.tar.gz
+         2791797 Sep 30 05:50 openssl-0.9.7c.tar.gz
+          120948 Jan  4  2003 pciutils-2.1.11.tar.gz
+          181144 Mar 11  2002 zlib-1.1.4.tar.gz
+
+These files are never deleted by a "make clean", once they are 
+downloaded you must delete them manually. You can delete the 
+entire dl directory if you like.
+
+After the first build with downloads and toolchain building, following
+"make clean ; make" builds should be much quicker.
+
+The final result of "make" at the top level is to build a flash
+image for an 256MB Sandisk CF card.  The flash image is bootable and contains
+a kernel and a small system with busybox, telnet, udhcpd.  The flash image
+uses cramfs for the root filesystem, /tmp is stored in ram using tmpfs,
+and /var points to a small minix partition on the CF card for non-volatile
+information.
+
+The faked disk geometry for CF cards varies quite a lot, so I recommend
+that you determine the geometry for your card by inserting it into a 
+target box, reset the box, bring up the cmos setup, go to the hard disk
+setup page, and read the cylinder/head/sector geometry from here.  This is
+the only reliable way I know to get this information.
+
+Once you have built a cf.img file with an image of the CF card, there
+are a couple of ways to put this on the card:
+
+    I have good luck with USB compact flash adapters on my host linux
+    machine.  The cards show up as SCSI devices and you can use dd to put
+    the image on the card something like:
+
+           # dd if=image/build/cf.img of=/dev/sda bs=512
+
+    Be very careful you don't erase the disk on your host system...
+    Once you write the card you can insert it in the target system and  
+    power cycle the box.  CF cards are NOT hot swappable when used in 
+    a IDE adapter, you must power cycle the target box when inserting
+    the card.
+
+    If this method works for you there is a program in the distribution
+    placed in /usr/local/uclibc/bin to make writing the image faster.
+    "writecf" only writes the sectors used my the image.  "dd" writes
+    all of the sectors, which is much slower for a card of any reasonable
+    size. writecf works something like:
+
+           % writecf -f cf.img -d /dev/sda   # Be careful!!
+
+    Another way to write the card is to boot the target diskless and use
+    the target box to write the card.  The requires setting up a 
+    tftp and dhcp server.  In the image directory there is
+    a make target if you do a "make all" that will build a kernel and
+    initrd image for network booting.  This is not built by default
+    because it requires root priveleges to build the initrd image.
+    The rest of the system builds without any root privleges (provided 
+    that /usr/local is writable).  You'll probably want to get the 
+    pxelinux.0 module from the syslinux project to boot this way.
+
+    Briefly, and probably not sufficient, to boot a diskless mini-itx
+    board do the following:
+
+        Setup a tftp server.  I put the following in /etc/xinet.d/tftp:
+
+            service tftp
+            {
+                    socket_type             = dgram
+                    wait                    = yes
+                    user                    = root
+                    server                  = /usr/sbin/in.tftpd
+                    server_args             = /tftpboot/
+                    disable                 = no
+                    cps                     = 100
+                    log_on_success          = RECORD
+            }
+
+        I had to update tftp on my redhat 7.1 system with the latest
+        tftp-hpa from http://www.kernel.org/pub/software/network/tftp/.
+        The pxelinux.0 code will make a request that seems
+        to hang older tftp servers. 
+
+        Make a /tftpboot directory on your server machine. Put pxelinux.0
+        in /tftpboot.  This binary is built from the syslinux project, it
+        is the only thing from this project needed for booting the system
+        so it's included as a binary in the image directory.
+
+        Configure your dhcp server to provide a boot file to the target 
+        box.  Here is what I have in my dhcpd.conf:
+
+            host via0   {   hardware ethernet  00:40:63:C0:93:38;
+                            fixed-address via0.mock.com;  
+                            option host-name "via0";
+                            filename "/tftpboot/pxelinux.0";
+                        }
+
+        When the target box boots and the cmos setup is set to boot
+        from LAN boot, the box should get an IP address and download
+        pxelinux.0.  pxelinux will attempt to find a configuration file
+        that tells where to get a kernel and initrd.  The possibilties
+        are pretty flexible, but for simplicity create a file in
+        /tftpboot/pxelinux.cfg/default containing a line something like:
+
+            default cl/bzImage-2.4.25-j1 initrd=cl/initrd-2.4.25-j1 root=/dev/ram0 ramdisk_size=32768 ramdisk_blocksize=4096
+
+        pxelinux will use tftp to download the kernel and initrd and then
+        boot the system.  If all goes well you should be rewarded with
+        a shell prompt on the console.  You can now nfs mount a 
+        development machine and run writecf to write an image onto the
+        compact flash card something like:
+        
+            # dd if=cf.img of=/dev/hda bs=65536
+               or
+            # writecf -d /dev/hda -f cf.img
+
+        In summary, the following files need to be in your /tftpboot
+        directory:
+
+            /tftpboot/pxelinux.0                # boot loader
+            /tftpboot/pxelinux.cfg/default      # config file
+            /tftpboot/cl/bzImage-2.4.25-j1      # kernel
+            /tftpboot/cl/initrd-2.4.25-j1       # initial ramdisk
+    
+        A note about nfs mounting once the machine is up.  The target
+        machine isn't running portmap and nfs mount is likely to hang
+        unless you use the "nolock" option to mount.
+
+            # mkdir /tmp/x     
+            # mount -o nolock wobble:/home /tmp/x
+
+    Once an image has been loaded into the card, there is a script
+    in /bin/update on the target box to use http to download a new
+    image for the root partition.  You will have to edit the update
+    script to suit your needs.  Update is kept in the jlo directory.
+    The is much easier than re-writing the entire CF image for each
+    update and might be useful for field updates.  You might modify
+    the update script in jlo to point to your own web server.
+
+Once the system boots you have a linux machine running a dhcp daemon, 
+a telnet daemon, sshd, and many common unix utilities from busybox.
+
+jeff

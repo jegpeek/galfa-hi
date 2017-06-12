@@ -1,0 +1,200 @@
+\documentstyle[12pt,epsf]{article}
+\setlength{\textheight}{21.5cm}
+\setlength{\textwidth}{7in}
+\setlength{\topmargin}{-0.25in}
+\setlength{\oddsidemargin}{-0.25in}
+\setlength{\evensidemargin}{0mm}
+\setlength{\parindent}{0em}
+\setlength{\headsep}{10.0mm}
+
+\def\baselinestretch{1.0}
+\pagestyle{myheadings}
+%\markright{\bf Stanimirovic \& Muller: Arecibo Observing
+%Proposal, Oct 2003}
+\def\kms{km~s$^{-1}$}
+
+\begin{document}
+\parskip 5pt
+\begin{center}
+  {\Large \bf Instructions for planning and executing boustrophedonic observations with ALFA in the Galactic 21cm line}
+
+\vspace{0.5cm} {\large Josh Goldston Peek}
+\end{center}
+
+Boustrophedonic comes from the Greek for ``As the ox plows the field'' (Robishaw, personal communication), and makes reference to the fact that once one is done doing a scan across a square region in one direction, the next scan is done in the opposite direction, slightly offset. These are called `RA/Dec' or `Dec/RA' maps in the parlance of CIMA, the Arecibo GUI control system, where the nomenclature is `Scan/Step'. This mode of observing is the preferable mode when observing a region that is inconvenient to observe in basketweave, specifically regions that are short in dec, but elongated in RA. The general description as to how to use `RA/dec' and `Dec/RA' modes is in the main CIMA document. This document assumes that knowledge and applies it to using ALFA with GALSPECT to map the Galactic 21-cm line.
+
+\section{Planning}
+
+In terms of planning the observations, there are a few helpful things to know. First, instead of stepping a measly 1.6 arcmins or so, as one might with with LBW, one can instead step the full `fat marker width' of 12.5 arcmins with ALFA. Note that, depending upon your definition of Nyquist, this may not quite be full Nyquist sampling. For our purposes, we will take one pass of ALFA at the appropriate rotation angle (see below) to be good enough for jug band. I suppose one could `interleave' these scans by running the entire map twice, offset by 1' or so, but we do not address that technique in this document. This step takes about 20 seconds to do at each end, assuming stepping in Dec (`RA/Dec' mode). We make this assumption because the current version of CIMA (2.2.00, or `capable'), allows for an `equal spacing in dec' mode. This mode forces there to be an even distribution of beams in Dec, so that when scanning in RA the lines are equally spaced. Note that this is not the same as just setting a parallactic angle of $19^{o}$, because the elongation of the beam grouping is always toward zenith, thus spacing out or compressing the beams. There is presently no equivalent mode for RA spacing so we only address the `RA/Dec' mode. 
+
+GALSPECT takes data at a fixed rate of 1 Hz. This means that beyond some speed, you will no longer sample at Nyquist in RA. This limiting speed is rather fast - around 1.8'/sec, and so should not pose much of a problem for reasonably deep observations; it is equivalent to $\sim$22.5 square degrees / hr. 
+
+It is desirable to cut up your region into manageable pieces. This is not so crucial in the Dec direction, as the `RA/Dec' mode allows you to start at any line (dec) you wish in the pattern, and indeed one will typically do some of a region and then pick up on the line in which one left off. It \emph{is} important in the RA direction, as once once piece of a region is set, it is hard to observe the rest of it. This is particularly crucial at extremal decs (ZA $>$ 10), as these regions are not visible to the telescope for very long (see table in new user's guide to AO). I recommend regions no bigger than 30 mins in RA.
+
+Once you have selected your regions there are a few documents you need to generate. I like to have a script to set up the observation to start with (a `command file'),  and a similar script for SFS calibration (see below), but I like to do the actual `RA/Dec' mode observing `by hand'. You will need:
+\begin{enumerate}
+\item A target list
+\item A setup script
+\item An SFS script
+\item A GALSPECT script
+\end{enumerate}
+The first three should be put in your project directory: \texttt{/home/obs4/usr/a\#\#\#\#}, if your project number is $\#\#\#\#$. If you don't have one, ask Arun or Hector. The last goes on GALSPECT itself, in the /var directory, and should be named \texttt{a\#\#\#\#}. A target list might look like:
+
+\texttt{\\
+sfs\_source 195400.0 150000.0 j 0. TOPO VOPT\\L1map 200900.0 035500.0 j 0. HELIO VOPT\\M1map 200900.0 095500.0 j 0. HELIO VOPT\\H1map 200900.0 153500.0 j 0. HELIO VOPT\\L2map 203900.0 035500.0 j 0. HELIO VOPT\\M2map 203900.0 095500.0 j 0. HELIO VOPT\\H2map 203900.0 153500.0 j 0. HELIO VOPT\\
+}
+
+Note that we use different doppler shifts for the object we track to do SFS than for the maps. This is not crucial; one can do an SFS while tracking any sky position with either TOPO or HELIO and the reduction code can handle it. The position of the SFS source should be chosen for your convenience. A sample setup script might look like:
+
+\texttt{\\
+RECEIVER alfa\\
+LOADIF galfa\_iflo.gui\\
+WAPPCONFIG\\
+CATALOG a2187\_sources.list\\
+SEEK sfs\_source\\
+ADJUSTPOWER\\
+NEWFITSFILE\\
+}
+
+This references the above target list, as well as an IF setup called \texttt{galfa\_iflo.gui}, which can be copied from \texttt{/home/obs4/usr/a2187}, among many other directories. The SFS script looks like:
+
+\texttt{
+SMARTFREQ freqs={1441.01123047 1443.74560547 1443.94091797 1444.52685547 1445.69873047 1446.08935547 1447.06591797 } secs=10 loops=2 caltype=hcal\\
+LOADIF galfa\_iflo.gui\\
+}
+
+It is crucial to re-load the iflo file, otherwise the IF will be left set to some strange frequency after SFS. The GALSPECT file looks like:
+\texttt{\\
+\#!/bin/sh\\
+\\
+gdiag -galfa -sdiv=600 -scram -lo2=256.25 -proj=a\#\#\#\# -vnc
+}
+\\
+To get this file on the GALSPECT computer just login as `guest' and type
+\\
+\texttt{scp -i galfa\_key /path/a\#\#\#\#:galfa@galfa1:/var/a\#\#\#\#}
+
+\section{Observing}
+
+These observations can be done locally or remotely. If you are a novice, I recommend a trip to Puerto Rico to get a feel for it, but otherwise remote is almost as good.
+
+Before we start, MAKE SURE THE ALFA COVER IS OFF. Just ask the operator. \\
+If you are operating remotely, set up following the "Remote Observing with the Arecibo Telescope'' instructions by Paulo Freire on the CIMA webpage. 
+
+Here are some basic steps:
+
+\begin{enumerate}
+
+\item {\bf Starting CIMA and pointing the telescope}
+
+\begin{enumerate}
+\item Open an xterm and type {\bf cima}. If it asks which version,
+choose anything v. 2.2.00 or higher
+\item On the center window entitled ``Welcome to CIMA''
+enter your name, and project number = a\#\#\#\# (NOTE `a' is lower
+case). Then under ``Select Observing Mode'' select ``Line''.
+\item On the window ``Available Receivers''
+click on ``ALFA'', then click on ``Disable Quick Tsys'', then click on
+``Select Receiver Now''.
+This will start rotating the turret to ALFA. Click on ``DISMISS'' to
+get rid of this window.
+
+\item If you are worried about the current state of the WAPPs, re-start WAPPs with:
+On the ``CIMA Observer's Interface'' window click on ``Utilities''.
+This will open a new window; click on ``Restart ALL WAPPs''. You can now dismiss the last window
+
+\item From ``CIMA Observer's Interface'' window select ``Command File
+Observing''. 
+
+\item A new window, ``Command File Observing'' will pop up.
+Click on ``Load'' to go and browse for a file you want to
+run. Click on your setup file, click on ``Open''.
+Then back on  the ``Command File Observing'' window
+click on ``Run''. 
+This will load the IFLO setup file and start driving the telescope to
+the desired source. Note that if you wish to end with SFS observing instead, you may click ``skip'' when you get to the ``SEEK'' line and it will move on, without getting on source.
+
+\end{enumerate}
+
+
+\item {\bf Starting GALSPECT}
+
+\begin{enumerate}
+\item While the telescope is driving to the desired position, 
+Login to {\it dataview} as user `guest' (password is naic305m). 
+
+\item Open an xterm and login to galfa1 computer by typing:
+
+{\bf
+[guest$@$dataview guest]\$  ssh -i galfa\_key galfa$@$galfa1 
+}
+
+The prompt {\bf \#} appears.
+
+\item
+In the same window type:
+
+{\bf
+\# /var/diag
+}
+
+Let it run -  you will see lots of messages, as GALSPECT is warming up. If this doesn't send you a bunch of message, you may need to type reboot, wait 60 seconds and log in again. This is \emph{very} rare.
+
+\item
+You may then type
+
+{\bf
+\# /var/levels
+}
+
+If this gives the message {\bf LO2: Set failed, got back: ERROR
+setting freq} follow the procedure given in the footnote\footnote{
+1. Open a new xterm on {\it dataview}.\\
+2. login to wappserv as user wapp (password=wappme) by typing {\bf ssh
+wapp$@$wappserv}. It will ask for password, type {\bf wappme}.\\
+3. Type {\bf /home/cima/WApp/Bin/Progs/Start/start\_gpib}.\\
+4. Return to the previous step and type again {\bf /var/levels} in the
+{\it galfa1} window.}.
+This will finish quickly and give you a short summary. 
+Check RMS values, they should all be around 10, and the dac values should not be either 0 or 128.
+
+\item Now, in the same window type:
+
+{\bf
+\# /var/a\#\#\#\#
+}
+
+This will mean you are starting to write data files with the GALSPECT. 
+You should start to see numbers tick by: 5s, 10s, 15s etc. You may also see some error
+messages - this is OK. The only serious problem is if this window does not print 
+new things of some kind every 5 seconds or so. If the window is completely frozen (no new 
+text) type CTRL-C in the window and enter the command that is in /var/a\#\#\#\# without the -vnc tag.
+
+This mode should again give you numbers that tick by. NOTE: If you end up using this mode, the OPTIONAL STEP below, that allows you to view what GALSPECT is doing, will not work. This is OK.
+
+\end{enumerate}
+
+\item {\bf Running the calibration and observations}
+
+\begin{enumerate}
+\item Return to cima on {\it observer2}.
+
+\item If you wish to run the SFS now you can load the SFS file just as you loaded the setup file and run it. You need to be tracking some kind of source to do this.
+
+\item Now, slew to one of your map sources. Click on the ``Pointing Control'' window and click on the button on the top called ``calib.cat''. This will give you a selection of catalog - at the top should be your own file. Select it. Now select the map you wish to observe in the ``Pointing Control'' window and click ``Point''. 
+
+\item Now, in the same window, click ``ALFA Rotation Control Window''. If this button doesn't exist, you may be in the wrong version of CIMA! In this new window set Tracking Type to ``Equal spacings in Dec'', the sky angle update rate to 4 seconds and the maximum angle deviation to 2 degrees. use ``both methods combined''. You may have it unwrap ALFA however you like - if every datum is crucial, have it abort and unwrap. If it's not such a big deal if there is the occasional hole, have it unwrap as it observes. Then click ``Enable''.
+
+\item Now it is time for the maps. From the Observer's Interface select ``Spectral Line Observing''. From the new window select ``RA/Dec Map''. Here you will want to enter in whatever size parameters you have decided for your map. Remember that the offsets are approximately 1/2 of the size of the map - they are the offsets from the middle. Set the drive direction to ``both ways''. The cal and doppler parameters can stay the same, although I typically set the leveling to ``never''. RA can be little or great circle; either way is fine. Depending upon the day, you may want to do some particular sub-map or start line. Note that setting a negative dec offset starts you on the bottom of the map, and setting a line number will increase the starting dec accordingly; setting a positive dec will start you at the top of the map and setting a line number will decrease the starting dec accordingly. Strangely, setting a negative RA offset will start you on the low-RA side of the map {\emph only for odd-numbered scans}. I think the reasoning is that by setting the RA negative you are reversing the map, so that odd-numbered scans go from negative RA and even-numbered scans go from positive RA, rather than vice-versa. To run the maps just click ``Observe''.
+
+\item When you are done mapping, do your SFS observing if you haven't done it yet (it is crucial for calibrating the data). Type ctrl-C in the GALSPECT window to kill it, Log out of GALSPECT, log out of CIMA and you're all done!
+
+\end{enumerate}
+\end{enumerate}
+
+\end{document}
+
+
+
+
+

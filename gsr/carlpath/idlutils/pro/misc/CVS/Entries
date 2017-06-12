@@ -1,0 +1,27 @@
+/blackbody.pro/1.2/Tue Jul 25 17:12:55 2000//
+/cpbackup.pro/1.1/Mon Mar 13 18:13:55 2000//
+/djs_filepath.pro/1.1/Fri Jul  7 14:14:28 2000//
+/djs_laxisgen.pro/1.2/Wed Apr 26 16:11:45 2000//
+/djs_laxisnum.pro/1.1/Sat Jun 16 00:08:43 2001//
+/djs_locate_file.pro/1.1/Thu Aug  5 13:56:17 1999//
+/djs_lockfile.pro/1.1/Sun Apr 30 23:21:11 2000//
+/djs_readcol.pro/1.1/Fri Jul  9 20:32:58 1999//
+/djs_readilines.pro/1.1/Thu Aug  5 13:56:18 1999//
+/djs_readlines.pro/1.1/Thu Aug  5 13:56:19 1999//
+/djs_selectlines.pro/1.1/Thu Aug  5 13:56:19 1999//
+/djs_unlockfile.pro/1.2/Mon May  1 03:05:59 2000//
+/fileandpath.pro/1.3/Tue Jul 25 17:13:55 2000//
+/floatcompress.pro/1.2/Sat Oct  7 15:19:09 2000//
+/idlutils_version.pro/1.4/Thu Dec  2 19:03:51 1999//
+/lookforgzip.pro/1.1/Sat Nov  4 18:05:27 2000//
+/make_html_help.pro/1.1/Tue Sep 26 21:23:45 2000//
+/struct_addtags.pro/1.3/Fri Oct 27 21:19:25 2000//
+/struct_append.pro/1.3/Fri Mar 16 17:30:50 2001//
+/which.pro/1.1/Wed Jun 28 18:00:16 2000//
+/rmfile.pro/1.4/Sat Jan  5 04:25:47 2002//
+/catfits.pro/1.2/Mon Feb 18 23:18:05 2002//
+/splog.pro/1.5/Thu Apr 11 22:24:47 2002//
+/djs_batch.pro/1.4/Thu Jun 13 03:57:14 2002//
+/struct_print.pro/1.6/Thu Jun 13 03:57:14 2002//
+/struct_trimtags.pro/1.6/Thu Jun  6 15:28:31 2002//
+D

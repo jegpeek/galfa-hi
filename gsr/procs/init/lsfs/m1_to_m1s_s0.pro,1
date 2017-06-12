@@ -1,0 +1,87 @@
+pro m1_to_m1s_s0, path, inputfiles, m1s, seq=seq
+
+;+
+;PURPOSE: given a list of files some of which contain SMARTF, extract the 
+;specific structures M1 that actually ARE SMARTF and return in structure M1S.
+;This is 'stage 0'; further iteration is required, done in m1_to_m1s_s1.
+;
+;INPUTS:
+;	path, the path to the data files
+;	files, an array of datafile names
+;
+;OUTPUTS:
+;	M1S, an array of M1 structures that are truly SMARTF.
+;
+;-
+
+;READ THE INPUT FILES AND CONCATENATE THE M1 STRUCTURES INTO M1S...
+
+if ( n_elements( seq) eq 0) then seq= [-32768l, 0l]
+
+nrfiles= n_elements( inputfiles)
+
+FOR NRF= 0, NRFILES-1 DO BEGIN   ;;;nrf
+
+filenm = path+ inputfiles[ nrf]
+print, 'input file is... ', filenm
+m1= mrdfits(filenm,1,hdr1)
+nspectra= n_elements(m1)/14l
+
+indx_smartf= where( m1.obsmode eq 'SMARTF  ', count_smartf)
+if (count_smartf lt 5*14) then $
+	stop, 'FEWER THAN 5 SMARTF RECORDS IN INPUT FILE. STOPPING'
+
+;BECAUSE THE LOFRQ TAKES LONGER TO CHANGE THAN THE OBSMODE, CHECK FOR THIS...
+;BY ASSUMING THAT 5 SPECTRA AFTER SMARTF APPEARS THE LO IS THE PROPER VALUE.
+;stop, 'STOP AT LOFRQ CHK IN m1_to_m1s_so'
+indx= where( m1.g_lo1 eq m1[ indx_smartf[ 5*14-1]].g_lo1)
+indx_smartf= indx[0] + lindgen( max( indx_smartf)- indx[0]+1)
+count_smartf= n_elements( indx_smartf)
+
+IF ( NRF EQ 0) THEN BEGIN
+
+;HANDLE CASE OF WANTING TO START AT A SPECIFIED SEQ NR...
+indx_seq= where( m1.g_seq ge seq[ 0], count_seq)
+if (count_seq eq 0) then $
+	stop, 'SEQ NR PROBLEM. SEE M1_TO_M1S_SO.PRO. STOPPING.
+IF ( MIN( INDX_SEQ) GT MIN( INDX_SMARTF)) THEN BEGIN
+	indx_smartf= indx_seq
+	count_smartf= count_seq
+ENDIF
+
+;DEFINE M1S, THE 'OUTPUT' ARRAY...
+m1s= replicate( m1[0], nrfiles* 14l* 600l)
+indxm1s= 0l
+ENDIF
+
+;stop, 'STOP IN FOR LOOP IN m1_to_m1s_s0'
+
+;HANDLE CASE OF WANTING TO STOP EARLY...
+IF SEQ[ 1] NE 0L THEN BEGIN
+indxmax= where( m1.g_seq le seq[ 1], countmax)
+if (countmax eq 0) then goto, finished
+if max( indxmax) lt max( indx_smartf) then $
+  indx_smartf= min( indx_smartf) + $
+	lindgen( max( indxmax)- min( indx_smartf) + 1l)
+count_smartf= n_elements( indx_smartf)
+ENDIF
+
+if ( count_smartf ne 0) then $
+	m1s[ indxm1s:indxm1s+ count_smartf- 1l]= m1[ indx_smartf]
+indxm1s= indxm1s+ count_smartf
+                                                                                
+ENDFOR				   ;;;nrf
+
+FINISHED:
+
+;stop, 'STOP AFTER "FINISHED" IN m1_to_m1s_s0'
+
+indxm1s= indxm1s - ( indxm1s mod 14)
+
+m1s= temporary( m1s[ 0: indxm1s-1])
+
+;stop, 'STOP AT END OF m1_to_m1s_s0'
+
+return
+end
+

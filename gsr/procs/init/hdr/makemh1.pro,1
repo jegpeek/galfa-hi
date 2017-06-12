@@ -1,0 +1,67 @@
+pro makemh1, pathin, filein, pathout, fileout, mh, mx, $
+	m1=m1, nochdoppler=nochdoppler
+
+;+
+;  MAKEMH1, pathin, filein, pathout, fileout, [nochdoppler]
+;
+;PURPOSE: generate a SINGLE mh.sav file from a SINGLE original fits file.
+;
+;INPUTS:
+;	PATHIN, the path for the input files. these are the original fits files (see example)
+;	FILEIN, name of input file (the original fits file)
+;	PATHOUT, the path for thte output mh.sav files (see example).
+;
+;OPTIONAL INPUT KEYWORD:
+;	NOCHDOPPLER. if set, does not do chdoppler correction, which is time consuming.
+;nochdoppler should normally NOT be set. 
+;
+;OUTPUTS:
+;	FILEOUT, the array of output filenames (the complete names including pathout)
+;	MH, the mh written into FILEOUT.
+;
+;EXAMPLE: the complete file spec is 
+;	 /dzd4/heiles/gsrdata/galfa.20050504.X107.0000.fits
+;	pathin = '/dzd4/heiles/gsrdata/'
+;	filein = 'galfa.20050504.X107.0000.fits'
+;
+;SIDE EFFECTS: generates the output mh.sav files.
+;
+;HISTORY: written by josh. may 05, nochdoppler added, documentation added by carl.	
+;-
+
+catch, error_status
+if error_status ne 0 then begin
+print, 'ERROR IN READING ', FILEIN, ' --- SKIP THIS PROCESSING'
+return
+endif
+
+time0= systime(1)
+fn = pathin + filein
+
+;DEFINE OUTPUT FILE NAME...
+fileout= strmid( filein, 0, strpos( filein, 'fits', /reverse_search))
+fileout= fileout+ 'mh.sav'
+fileout = pathout + fileout
+;stop
+m1 = mrdfits(fn, 1, hdr)
+nspectra = n_elements(m1)/14l
+if (nspectra le 3) then begin
+    print, 'less than 4 spectra in file: error'
+    return
+endif
+
+print, 'time to read fits file = ', systime(1)-time0
+
+;;CHECK FOR MULTIPLE OF 14 RECORDS...
+;IF 14L*NSPECTRA NE N_ELEMENTS( M1) THEN BEGIN
+;	print, 'FILE DOESNT HAVE MULTIPLE OF 14 RECORDS: ', filein
+;	return
+;ENDIF
+
+m1 = reform(temporary(m1[0l: 14l*nspectra- 1]), 2, 7, nspectra)	
+m1_hdr, m1, mh, mx, nochdoppler=nochdoppler
+save, mh, mx, filename=fileout
+
+print, '***************************writing ', fileout
+
+end

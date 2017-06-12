@@ -1,0 +1,285 @@
+#!/usr/bin/perl
+
+#
+# $Id: mkimage,v 1.2 2001/10/26 03:25:10 jeff Exp $
+#
+
+use Getopt::Long;
+use open  IO => ":bytes";
+
+#
+# Defaults for generic 8MB CF card.  Based on experimentation,
+# the only reliable way I've found to determine these parameters
+# is to install the card in a target machine, bring up the cmos
+# setup sreen, and go to the drive parameters page for the CF IDE
+# device, and read the parameters from this setup screen.
+#
+$opt_sectors        = 32;       # sectors per track
+$opt_heads          = 2;
+$opt_cylinders      = 248;
+
+$opt_loader         = "/usr/local/uclibc/lib/jlo";
+$opt_image          = "cf.img";
+
+$opt_p1             = "";
+$opt_p1_size        = 0;
+$opt_p2             = "";
+$opt_p2_size        = 0;
+$opt_p3             = "";
+$opt_p3_size        = 0;
+$opt_p4             = "";
+$opt_p4_size        = 0;
+
+$opt_align          = 0;
+$opt_verbose        = 0;
+$opt_boot           = 0;
+
+$cmdline = join " ", @ARGV;
+
+if (!GetOptions(
+        'sectors=i'     => \$opt_sectors,
+        'heads=i'       => \$opt_heads,
+        'cylinders=i'   => \$opt_cylinders,
+        'loader=s'      => \$opt_loader,
+        'image=s'       => \$opt_image,
+
+        'p1=s'          => \$opt_p1,
+        'p1-size=s'     => \$opt_p1_size,
+        'p2=s'          => \$opt_p2,
+        'p2-size=s'     => \$opt_p2_size,
+        'p3=s'          => \$opt_p3,
+        'p3-size=s'     => \$opt_p3_size,
+        'p4=s'          => \$opt_p4,
+        'p4-size=s'     => \$opt_p4_size,
+        'boot=i'        => \$opt_boot,
+        
+        'align'         => \$opt_align,
+        'v'             => \$opt_verbose,
+    )) 
+{
+    print STDERR <<USAGE;
+
+    Generate image file for compact flash card
+        
+    mkimage [options] 
+        [--sectors=n]       Sectors per track
+        [--heads=n]         Number of heads
+        [--cylinders=n]     Number of cylinders
+        [--loader=file]     Bootstrap loader image
+        [--image=file]      Output CF image file
+        [--boot=n]          Set partition n as active partition
+
+        [--p1=file]         Image file for partition 1
+        [--p1-size=n]       Image file size for partition 1 in kiB
+        [--p2=file]         Image file for partition 2
+        [--p2-size=n]       Image file size for partition 2 in kiB
+        [--p3=file]         Image file for partition 3
+        [--p3-size=n]       Image file size for partition 3 in kiB
+        [--p4=file]         Image file for partition 4
+        [--p4-size=n]       Image file size for partition 4 in kiB
+    
+        [--a]ign]           Align first partition on track boundary
+        [--v]               Verbose output
+
+USAGE
+    exit 1;
+}
+
+sub chs_add
+{
+    my $n = shift;
+    my $c;
+
+    $c_sector += $n;
+    # sectors go from 1..$opt_sectors
+    if ($c_sector > $opt_sectors) {
+        $c = int(($c_sector-1) / $opt_sectors);
+        $c_sector = (($c_sector-1) % $opt_sectors) + 1;
+
+        $c_head += $c;
+        if ($c_head >= $opt_heads) {
+            $c = int($c_head / $opt_heads);
+            $c_head = $c_head % $opt_heads;
+
+            $c_track += $c;
+        }
+    }
+}
+
+# Increment disk position until we are at the beginning of a track
+sub do_align
+{
+    while ($c_sector != 1) {
+        chs_add(1);
+    }
+}
+        
+# Increment disk position until we are at the beginning of a track
+sub do_align_eoc
+{
+    while ($c_sector != 1 || $c_head != 0) {
+        chs_add(1);
+    }
+}
+        
+# Insert a file into the image file and add a partition entry
+sub insert
+{
+    my $n = shift;
+    my $fn = shift;
+    my $part_size = shift;
+
+    my $l1, $l2;
+    my @part;
+    my $start_head, $start_track, $start_sector, $start_lba;
+    my $end_head, $end_track, $end_sector, $end_lba;
+    my $lba_size;
+
+    local $/;
+    undef $/;
+    open FD, "<$fn" or die "Cannot open image file $fn\n   $!";
+    $fimage = <FD>;
+    close FD;
+
+    $part_size *= 2;                        # convert to sectors
+    $lsize = (length($fimage)+511) >> 9;    # in sectors 
+    if ($part_size) {
+        die "Partition size of $part_size smaller than filesize of $fn"
+            if ($part_size < $lsize);
+    } else {
+        $part_size = $lsize;
+    }
+    $start_track = $c_track;
+    $start_head = $c_head;
+    $start_sector = $c_sector;
+    $start_lba = ($start_track*$opt_heads + $start_head)*$opt_sectors +
+        $start_sector - 1;
+
+    chs_add($part_size);
+    do_align_eoc();
+
+    $end_sector = $c_sector - 1;
+    if ($end_sector == 0) {
+        $end_sector = $opt_sectors;
+        if ($c_head == 0) {
+            $end_head = $opt_heads - 1;
+            $end_track = $c_track-1;
+        } else {
+            $end_head = $c_head-1;
+        }
+    }
+    $end_lba = ($end_track*$opt_heads + $end_head)*$opt_sectors +
+        $end_sector - 1;
+    $lba_size = $end_lba - $start_lba + 1;
+
+    substr($image, $start_lba*512, length($fimage)) = $fimage;
+
+    # Extract 16-byte partition entry as array of bytes for easier
+    # manipulation
+    @part = unpack 'C*', substr($image, 0x1be + ($n-1)*16, 16);
+
+    $part[0]  = 0;
+    $part[1]  = ($start_head & 0x3f) | (($start_track >> 4) & 0xc0);
+    $part[2]  = ($start_sector & 0x3f) | (($start_track >> 2) & 0xc0);
+    $part[3]  = $start_track & 0xff;
+    $part[4]  = 0x83;       # Linux partition
+    $part[5]  = ($end_head & 0x3f) | (($end_track >> 4) & 0xc0);
+    $part[6]  = ($end_sector & 0x3f) | (($end_track >> 2) & 0xc0);
+    $part[7]  = $end_track & 0xff;
+    $part[8]  = $start_lba & 0xff;
+    $part[9]  = ($start_lba >> 8) & 0xff;
+    $part[10] = ($start_lba >> 16) & 0xff;
+    $part[11] = ($start_lba >> 24) & 0xff;
+    $part[12] = $lba_size & 0xff;
+    $part[13] = ($lba_size >> 8) & 0xff;
+    $part[14] = ($lba_size >> 16) & 0xff;
+    $part[15] = ($lba_size >> 24) & 0xff;
+
+    # Pack partition back into 16-byte string and insert into image
+    substr($image, 0x1be + ($n-1)*16, 16) = pack 'C*', @part;
+
+    printf "$fn is %d sectors\n", $lsize if $opt_verbose;
+    printf "    Partition %d is %d sectors, installed in sectors %d - %d.\n",
+            $n, $lba_size, $start_lba, $end_lba if $opt_verbose;
+}
+
+sub set_active {
+    my $part = shift;
+
+    # Set active bit for specificed partition
+    substr($image, 0x1be + ($part-1)*16, 1) = chr(0x80);
+}
+
+#
+# Fun starts here.
+#
+
+$c_track = 0;
+$c_head = 0;
+$c_sector = 1;
+
+die "Need drive geometry to proceed" 
+    if (!$opt_cylinders || !$opt_heads || !$opt_sectors);
+
+# Set first loaded partition as active partition if
+# nothing set on command line.
+#
+if (!$opt_boot) {
+    $opt_boot = 4 if $opt_p4;
+    $opt_boot = 3 if $opt_p3;
+    $opt_boot = 2 if $opt_p2;
+    $opt_boot = 1 if $opt_p1;
+}
+
+# Size of disk in sectors
+$size = $opt_sectors * $opt_heads * $opt_cylinders * 512;
+printf "Disk image is %d sectors.\n", $opt_sectors*$opt_heads*$opt_cylinders
+    if $opt_verbose;
+
+# writecf uses 0x55 as indicator for unused sectors that do not need to be
+# written to the disk
+#
+$image = chr(0x55) x $size;
+
+# Insert boot loader at beginning of image
+{
+    my $loader;
+    my $l1, $l2;
+
+    local $/;
+    undef $/;
+    open FD, "<$opt_loader" or die "Cannot open loader $opt_loader\n   $!";
+    $loader = <FD>;
+    close FD;
+
+    substr($image, 0, length($loader)) = $loader;
+
+    $loader_size = (length($loader)+511) >> 9;
+    chs_add($loader_size);
+
+    # The bootloader builds to load 31 sectors starting at (0,0,2),
+    # the sector after the MBR.  This works for most all cases, but
+    # if the boot loader gets bigger than 16k because of a large 
+    # splash screen, the MBR needs to be patched to load enough
+    # sectors for the secondary boot.
+    die "Get Jeff to fix this up!" if $loader_size > 31;
+
+    printf "$opt_loader installed in sectors %d - %d.\n", 0, $loader_size-1
+        if $opt_verbose;
+}
+
+do_align() if $opt_align;
+insert(1, $opt_p1, $opt_p1_size) if ($opt_p1);
+insert(2, $opt_p2, $opt_p2_size) if ($opt_p2);
+insert(3, $opt_p3, $opt_p3_size) if ($opt_p3);
+insert(4, $opt_p4, $opt_p4_size) if ($opt_p4);
+
+# Set active partition
+set_active($opt_boot);
+
+# Write image file
+open FD, ">$opt_image" or die "Cannot open image $opt_image\n   $!";
+print FD $image;
+close FD;
+
+

@@ -1,0 +1,142 @@
+\documentstyle[12pt]{report}
+\newcommand{\exbegin}{\par\medskip}
+\newcommand{\exend}{\medskip\noindent}
+\newcommand{\exc}[2]{
+\hbox to \hsize{\small\hskip .2in
+\parbox[t]{2.2in}{\raggedright\setlength{\parindent}{-.2in}\tt #1}
+\hspace{.2in}
+\parbox[t]{3.4in}{\raggedright\setlength{\parindent}{-.2in}\rm #2}\hss}
+\prevdepth=1.5pt\relax}
+% One line example
+\newcommand{\exone}[1]{\begin{center}\tt #1 \end{center}}
+\begin{document}
+\section{IDL FITS tape I/O}
+{\bf FITSRD - IDL FITS tape read routine} \\
+
+To read a FITS tape from IDL and place the data into SDAS internal FITS
+formatted data sets use
+the routine FITSRD.  To execute, while in IDL, type:
+\begin{center}
+{\tt FITSRD}
+\end{center}
+You will then be asked for the tape unit number.  For example if
+the tape is mounted on a drive which was assigned to MT0:,
+type:
+\begin{center}
+{\tt 0}
+\end{center}
+You will next be asked for the numbers of the tape files to be copied to disk.
+These must be entered with one file per line, or a range of files
+per line.  Input is terminated by entering 0.  For example to read
+files 4, 8, 12 through 16, and 20, type: \\
+\begin{tabbing}
+You will next be asked for the num\=   \kill
+\> {\tt 4} \\
+\> {\tt 8} \\
+\> {\tt 12-16} \\
+\> {\tt 20} \\
+\> {\tt 0} 
+\end{tabbing}
+You will next be asked how you want the SDAS internal FITS data sets named.  
+They will be placed in your present default directory in data sets $<$name$>$.HHH,
+for the FITS header, and $<$name$>$.HHD, for the data.  Three methods of
+choosing $<$name$>$ are available.  You will be asked if you want the names
+taken from a keyword in the FITS header of the file.  If so, enter
+the name of the keyword, otherwise just hit carriage return.
+If you did not specify a keyword name then you will be asked for
+a tape name.
+If you give a tape name, (e.g.\ JUPITER),
+then the disk data set names will be JUPITER1 (file 1), JUPITER2 (file 2), etc.
+If you do not enter a tape name (i.e. just hit $<$return$>$), you will be asked 
+to enter a data set name for every tape file specified.
+
+Once the disk data set names have been specified, the program processes the
+tape.  No further input is needed.
+
+In the event any tape files also have FITS extension files, these
+will be placed on disk with names $<$name$>$\_1, $<$name$>$\_2, \ldots where
+$<$name$>$ is the name of the file.  Each extension file will have
+a .HHH and .HHD disk file.
+
+The SDAS internal FITS disk data sets can be read using the IDL commands SXOPEN,
+and SXREAD.
+ 
+The SDAS internal FITS data sets are NOT converted to floating point values, in
+order to permit working with byte, half-word, or 32 bit integer data.
+To rescale integer data to floating point, execute the following IDL
+statements: \\
+\\
+{\tt SXOPEN,1,'filename',HEADER} \\
+{\tt FDATA = SXREAD(1)*SXPAR(HEADER,'BSCALE')+SXPAR(HEADER,'BZERO')} \\
+\\
+{\bf FITSWRT - IDL FITS tape write routine.} \\
+\\
+To write internal SDAS formatted FITS data sets from disk to tape, use the
+routine FITSWRT.  FITSWRT does not re-position a tape before writing to it,
+so the tape should already be positioned using the REWIND or SKIPF comands.
+If you want to append new FITS files to an existing FITS tape then first 
+use the
+procedure TINIT to position the tape between the final double EOF.
+To begin execution of FITSWRT, while in IDL, type:
+\begin{center}
+{\tt FITSWRT}
+\end{center}
+You will then be asked for the tape unit number to write to.  For example
+for a tape mounted on a tape unit assigned to MT1:, type: 
+\begin{center}
+{\tt 1} 
+\end{center}
+You will then be asked for the tape blocking factor,  enter 1
+for a unblocked (2880 byte record) FITS tape, otherwise enter
+the number of 2880 byte blocks per tape record.
+
+You now have the option of having the file name placed in a
+keyword of the header written to tape.  You may enter the name of
+the keyword or just hit carriage return if you don't want the
+file name written.
+
+Next you will be asked if FITS extension files are to be search for
+automatically. If you answer yes then for every fits file name
+specified the program will search for all files name\_$\ast$.hhh and
+write them to tape as extensions to name.
+
+You will next be asked if the data sets to be written have names in the
+form $<$name$><$number$>$, (eg. JUPITER1, JUPITER2, \ldots).  If you answer
+yes then you will be asked to enter a value for $<$name$>$.  For the previous
+example enter:
+\begin{center}
+{\tt JUPITER}
+\end{center}
+You will then be asked to enter the file $<$number$>$ for each data set to
+be copied to tape.  For example to copy JUPITER3,
+JUPITER5, JUPITER6, JUPITER7, JUPITER8, AND JUPITER2 to tape, type: \\
+\begin{tabbing}
+You will next be asked for the num\=   \kill
+\> {\tt 3} \\
+\> {\tt 5-8} \\
+\> {\tt 2} \\
+\> {\tt 0} 
+\end{tabbing}
+Notice input was again terminated by typing 0.
+
+If the data set names are not in the above format you will be asked
+to enter each data set name, one per line.  
+Once you have entered all names, enter a null string (blank line)
+by hitting $<$return$>$.
+If you did not specify automatic searching for FITS extension
+files you may enter them with the file names by typing:
+\exone{name/ext.name1/ext.name2/ \ldots}
+For example if the FITS file name was JUPITER and you had
+a FITS table, juptab, associcated with it enter: 
+\begin{center}
+{\tt jupiter/juptab} 
+\end{center}
+Processing will then proceed until all files are copied.
+The order on tape will be the same as the order specified in the list of
+disk files.
+
+FITSWRT can be used for byte, 16 bit integer, 32 bit integer or 32 bit
+floating point data files.  Floating point data files are not converted
+to scaled integers when writing to tape, and therefore may not be transported
+to all computer systems.
+\end{document}

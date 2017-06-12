@@ -1,0 +1,58 @@
+# 
+# 327 pointing model file copied from modelSB  29sep00
+# format is  az  za.  units are great circle arcseconds
+#   col 1
+#   #  - comment
+#   #!modelxx  yymmdd  start of model 
+#   blank  or number   current model data (N lines)
+#   #!       az  za    archived model data
+#!model32715A  13 B enctbl15A  040513 model15
+# tur:339.9 ,scl:-.75 format B .. from 02may04 survey.
+#  -113.190   -24.01  constant.. same off sbn. need to check!!!
+   -106.17    25.22  constant.. 20may04 from verify run
+    -6.05    -95.56  cos(az)
+    92.35     -4.13  sin(az)
+  -731.21    141.69  sin(za)
+ -1013.97    677.51  sin(za)**2
+   -24.53    -10.41  cos(3az)
+   -11.19     -7.71  sin(3az)
+     9.18    -10.39  sin(za-balance)*cos(3az)
+   106.04      0.08  sin(za-balance)*sin(3az)
+     3.02      0.43  cos(2az)
+    -1.74     -0.62  sin(2az)
+    -3.46      0.03  cos(6az)
+     1.29     -0.36  sin(6az)
+#!model32714A  13 B enctbl14A  030304 model14
+# tur:21.5  ,scl:-.75 format B  ..rcv moved 7jan04. installed7jan04
+# tur:21.5  ,scl:-.75 format B  ..
+#!   -124.15   16.28   constant  same relative offset to sb11
+#!    -6.41   -100.92  cos(az)
+#!    99.16     -5.74  sin(az)
+#!  -713.84    175.81  sin(za)
+#! -1028.24    489.81  sin(za)**2
+#!   -22.20    -11.42  cos(3az)
+#!   -12.08     -7.80  sin(3az)
+#!     7.31      4.00  sin(za-balance)*cos(3az)
+#!   111.56      1.25  sin(za-balance)*sin(3az)
+#!     2.49      0.43  cos(2az)
+#!    -0.69     -0.42  sin(2az)
+#!    -1.93     -0.30  cos(6az)
+#!     0.91     -0.19  sin(6az)
+#
+#!model32711A  13 B enctbl11A  000206 model11 done. then used to verify feeds
+# tur:21.5  ,scl:-.75 format B  ..
+#   -41.66    -90.04  offsets  original from lbn
+#   -130.00   -124.04  offsets  -89,-34 offsets  06oct00 first 4 strips
+#!   -127.00      6.04  offsets  +3,+130  offsets  07aug02 calib runs
+#!   -14.28    -95.08  cosaz 
+#!    91.27    -11.98  sinaz
+#!   -969.26    261.77  sinza az enc jump 16sep02
+#!  -796.59   -348.23  sinza*sinza
+#!   -22.31    -10.79  cos3az
+#!   -13.95     -7.12  sin3az
+#!    31.40    -14.38  cos3az*sin(za-balance)
+#!   119.20     18.99  sin3az*sin(za-balance)
+#!     2.40      3.95  cos2az
+#!    -6.11     -1.75  sin2az
+#!    -2.89      0.91  cos6az
+#!    -0.19     -0.77  sin6az

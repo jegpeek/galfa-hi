@@ -1,0 +1,50 @@
+file: ~phil/idl/ReadmeExport
+For exporting correlator/ri idl routines.. some of the things you need to do.
+----------------------------------------------------------- 
+Making the tar file to take with you:
+    You can creat a tar file on disc and then ftp it to your site..
+The file size is < 1mb:
+	The tar file already exists at:
+	~phil/idl/idl.tar. it is about 800 kb
+
+    You can then ftp this file to your home computer.
+
+----------------------------------------------------------- 
+Installing the routines at your home institution.
+
+    Create a directory to place the ao idl routines and a second directory 
+	to hold the html documentation (that is accessible from a web 
+	browser)  Lets assume you used: 
+	- /share/idl/ao to store the idl procedures.
+	- /home/aoidl/public_html for the directory to hold the idl html
+							  documentation
+	- http://www.yoursite.edu/~aoidl as the url for the directory
+							  in step 2 (change the address to the 
+							  correct value).
+
+
+    cp idl.tar to /share/idl/ao
+    tar -xf idl.tar
+
+    If you run tar as root, be sure and include the o option (-xof) so that
+    the owner of the files is the person running tar.
+
+
+0. in the user's  startup file for idl add:
+   !path = expand_path('+/share/idl/ao/gen')+':'+ !path
+
+1. in /share/idl/ao/gen/aodefdir.pro
+    change:     return,'/pkg/rsi/local/libao/phil/'
+        to:     return,'/share/idl/ao/'
+    change:     return,'/home/phil/pubilc_html/'
+        to:     return,'/home/aoidl/pubilc_html/'
+    change:     return,'http://www.naic.edu/~phil/'
+        to:     return,'http://www.yoursite.edu/~aoidl/'
+
+2. After you have created the html directory you an run
+   @allmkdoc  
+
+   This will create a file /tmp/idlmkall.pro and execute it. It will
+   create the various html files in the aodefdir(/doc) directory.
+   It deletes the /tmp/aomkall.pro file when it is done.
+	

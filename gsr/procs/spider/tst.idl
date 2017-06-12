@@ -1,0 +1,11 @@
+freq= 1340+ findgen(100)
+
+cals= fltarr( 2,7,100)
+
+for nr=0,99 do begin
+istat= calget1(17,1,freq[nr],calval)
+cals[*,*,nr]= calval
+endfor
+
+end
+

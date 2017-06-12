@@ -1,0 +1,16 @@
+#   rcvnum 12 sband narrow one  cal diode .. lcal
+#  nd1/2  noise diode 1/2
+#  Pa/b   feeding polarization a/b
+#  H/L    high,low cal
+# 0. --> no meausurement
+# !yyyy daynum.. following data valid after this date
+#
+#frq nd1PaH nd1PaL nd1PbH Nd1PbL nd2PaH nd2PaL nd2PbH nd2PbL  
+# 0    1       2     3       4    5       6     7       8
+#
+# Swapped Polarizations 2003 October 14 about 10 AM AST
+!2003 287
+2380  0.     6.9    0.     6.76   0.     0.     0.    0. 
+# original data
+!0 1
+2380  0.     6.76   0.     6.9    0.     0.     0.    0. 

@@ -1,0 +1,41 @@
+#
+# pointing model file for lband feed on carriage house 971103 # format is:
+#
+# comment, 
+##!modelXX hdr for model, 
+##! num num  archived data for model
+#    num num  current dat for model
+#  hdr line for model:
+# #!modelXX numcoef format encTbl date
+# units are great circle arcseconds
+#
+# 16sep02 there was a jump of -1446 in sinza az term from encoder jump.
+# i did not add it here.. -49.1 goes to -1446 -49 (but need to check the
+# direction +/-1 since ch.
+#!modelCHLB7 13 B enctblch 980915   original model in model7 format
+# 7.4	 -97.1		offsets  feed offset 1.386=4989.6.. subtract 
+  7.4  -5146.7  	offsets  feed offset 1.402=5047.2 + 1 arc min.. subtract 
+  5.4	  66.1		cosAz
+ -49.1	  14.3		sinAz
+# 355.0	 321.7		sinZa
+ -1091.0 321.7		sinZa added -1446 for az enc jump 25sep02
+0.	  0.
+0.	  0.
+0.	  0.
+0.	  0.
+0.	  0.
+0.	  0.
+0.	  0.
+0.	  0.
+0.	  0.
+#!modelCH 4 M none 971103   original model
+#!  7.4	 -97.1		offsets
+#!  5.4	  66.1		cosAz
+#! -49.1	  14.3		sinAz
+#! 355.0	 321.7		sinZa
+#!0.	  0.
+#!0.	  0.
+#!0.	  0.
+#!0.	  0.
+#!0.	  0.
+#!0.	  0.

@@ -1,0 +1,31 @@
+
+  Sparse BLAS (Basic Linear Algebra Subprograms) Library
+	Version 1.0
+ 
+  Mathematical and Computational Sciences Division
+  National Institute of Technology,
+  Gaithersburg, MD USA
+ 
+  A C++ implementation of the routines specified by the ANSI C 
+  interface specification of the Sparse BLAS in the BLAS Technical 
+  Forum Standard[1].   For details, see [2].
+ 
+  This file requires three header files from the standard specification:
+  "blas_sparse.h", "blas_enum.h", and "blas_sparse_proto.h".  These are
+	available from [1], and included in this distribution for convenience.  
+	Make sure the include files are placed in a location visible to the 
+	compiler.  To compile, use something similar to
+
+		c++ -c nist_spblas.cc
+
+	to create an object file.  You can then convert or add this object file 
+	to a library, although this is not necessary.
+ 
+  [1] BLAS Technical Forum: www.netlib.org/blas/blast-forum/
+  [2] I. S. Duff, M. A. Heroux, R. Pozo, "An Overview of the Sparse Basic
+      Linear Algebra Subprograms: The new standard of the BLAS Techincal
+      Forum,"  Vol. 28, No. 2, pp. 239-267,ACM Transactions on Mathematical 
+      Software (TOMS), 2002.
+ 
+ 
+ 

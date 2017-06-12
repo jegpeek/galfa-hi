@@ -1,0 +1,14 @@
+following mods made to beamfit programs:
+
+1. convergence criteria in gfit_allcal.pro changed: now responds to 
+fractional change in sigma. also changed halfassed to 0.25 from 0.5.
+
+2. dfteval.pro. now evaluates sidelobe properties using dft instead of ffteval.
+also, use the real part of the result instead of its absolute value--
+gives smaller errors.
+
+
+
+
+
+

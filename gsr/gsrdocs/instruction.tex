@@ -1,0 +1,212 @@
+\documentstyle[12pt,epsf]{article}
+\setlength{\textheight}{21.5cm}
+\setlength{\textwidth}{7in}
+\setlength{\topmargin}{-0.25in}
+\setlength{\oddsidemargin}{-0.25in}
+\setlength{\evensidemargin}{0mm}
+\setlength{\parindent}{0em}
+\setlength{\headsep}{10.0mm}
+
+\def\baselinestretch{1.0}
+\pagestyle{myheadings}
+%\markright{\bf Stanimirovic \& Muller: Arecibo Observing
+%Proposal, Oct 2003}
+\def\kms{km~s$^{-1}$}
+
+\begin{document}
+\parskip 5pt
+\begin{center}
+  {\Large \bf Instructions for running a2222}
+
+\vspace{0.5cm} {\large Josh Goldston for the GALFA team (July 27 2006)}
+\end{center}
+%\vspace{0.5cm}
+
+In case of any problems or concerns please call Josh at 510 299 4427, day or night.
+These are observations with ALFA and GALSPECT. The observing procedure
+consists of running a calibration routine (called Smart Frequency
+Switching) and then making a map with basket-weave scanning (the observing
+routine is called Basketweave Scanning). These procedures are {\it very} similar to 
+those done with a2011, a2032, a2050 and a2060 so if you were familiar with those, you
+should be familiar with this! 
+
+Before we start, MAKE SURE THE ALFA COVER IS OFF.\\
+Also, MAKE SURE THE AZ IS SET TO 360, NOT 0.\\
+Here are some basic steps:
+
+\begin{enumerate}
+
+\item {\bf Starting CIMA and pointing the telescope}
+
+\begin{enumerate}
+\item On {\it observer2} login as dtusr. 
+\item Open an xterm and type {\bf cima}. If it asks which version,
+choose {\bf``normal''} . 
+\item On the center window entitled ``Welcome to CIMA''
+enter your name, and project number = a2222. Then under ``Select Observing Mode'' select ``Line''.
+\item On the window ``Available Receivers''
+click on ``ALFA'', then click on ``Disable Quick Tsys'', then click on
+``Select Receiver Now''.
+This will start rotating the turret to ALFA.
+
+\item Re-start WAPPs with:
+On the ``CIMA Observer's Interface'' window click on ``Utilities''. This will open a new window; click on ``Restart WAPPs''. You can now dismiss the last window.
+
+\item From ``CIMA Observer's Interface'' window select ``Command File
+Observing''. 
+
+\item A new window, ``Command File Observing'' will pop up.
+Click on ``Load'' to go and browse for a file you want to
+run. Click on file ``acwf\_day\_00\_pt1'', click on ``Open''.
+Then back on  the ``Command File Observing'' window
+click on ``Run''. 
+This will load the IFLO setup file and start driving the telescope to
+the desired source.
+
+
+\end{enumerate}
+
+
+\item {\bf Starting GALSPECT}
+
+\begin{enumerate}
+\item While the telescope is driving to the desired position, 
+Login to {\it dataview} as user `guest' (password is naic305m). 
+
+\item Open an xterm and login to galfa1 computer by typing:
+
+{\bf
+[guest$@$dataview guest]\$  ssh -i galfa\_key galfa$@$galfa1 
+}
+
+The prompt {\bf \#} appears.
+
+\item
+In the same window type:
+
+{\bf
+\# /var/diag
+}
+
+Let it run -  you will see lots of messages, as GALSPECT is warming up. 
+
+\item
+Once you get on the source in the same window type:
+
+{\bf
+\# /var/levels
+}
+
+If this gives the message {\bf LO2: Set failed, got back: ERROR
+setting freq} follow the procedure given in the footnote\footnote{
+1. Open a new xterm on {\it dataview}.\\
+2. login to wappserv as user wapp (password=wappme) by typing {\bf ssh
+wapp$@$wappserv}. It will ask for password, type {\bf wappme}.\\
+3. Type {\bf /home/cima/Wapp/Bin/Progs/Start/st art\_gpib}.\\
+4. Return to the previous step and type again {\bf /var/levels} in the
+{\it galfa1} window.}.
+This will finish quickly and give you a short summary. 
+Check RMS values, they should all be around 10. 
+If they are not close to 10 call Josh.
+
+\item Now, in the same window type:
+
+{\bf
+\# /var/a2222
+}
+
+This will mean you are starting to write data files with the GALSPECT. 
+You should start to see numbers tick by: 5s, 10s, 15s etc. You may also see some error
+messages - this is OK. The only serious problem is if this window does not print 
+new things of some kind every 5 seconds or so. If the window is completely frozen (no new 
+text) type CTRL-C in the window and type:
+
+{\bf
+\# /var/a2222novnc
+}
+
+This mode should again give you numbers that tick by. If you still do not see these numbers,
+call Josh. NOTE: If you end up using this mode, the OPTIONAL STEP below,
+that allows you to view what GALSPECT is doing, will not work. This is OK.
+
+\end{enumerate}
+
+\item {\bf Running the calibration and observations}
+
+\begin{enumerate}
+\item Return to cima on {\it observer2}.
+and to the ``Command File Observing'' window. 
+
+\item 
+Click on ``Load'' to go and browse for a file you want to
+run. Click on file ``acwf\_day\_00\_pt2'', click on ``Open''.
+Then back on  the ``Command File Observing'' window
+click on ``Run''. 
+
+\item
+This will start a series of steps, it will run a calibration routine first,
+then a basket-weave scan. 
+Please WATCH the ``AO Observer Display'' for a few minutes! It should
+show updated messages every few seconds. If you notice that 
+observing is hanging (you don't see updated messages every few
+seconds) please call Josh. If the telescope is `waiting' at to begin
+the basketweave scan for some number of seconds, that is OK.
+
+\item
+Please take note of what object the telescope the tracking for the majority of the night.
+The name should be something like ``acwf\_16\_01''. Please send this name, along
+with any abnormalities or difficulties you experience during the night in an e-mail to 
+Josh at golston@astro.berkeley.edu.
+
+
+\item At any time during observing you can open 
+``Quick Look Data Display'' on {\it dataview} to make sure the spectra
+   are being updated. \\
+
+\item OPTIONAL STEP: You can also view data using GALSPECT's
+display. 
+
+\begin{enumerate}
+\item Open a new xterm on dataview and type:\\
+{\bf [guest$@$dataview guest]\$ vncviewer galfa1} \\
+
+\item
+This brings up a {\it plot window} entitled ``TightVNC: Pixmap
+framebuffer''. With the cursor on this window type ``h'', this will
+blow up the plot and make it easier to inspect spectra.
+
+\item 
+G-ALFA folder in the control room explains how to change different display
+options
+\end{enumerate}
+
+\end{enumerate}
+
+\item {\bf Stopping at the end of the run}
+
+\begin{enumerate}
+\item  On {\it observer2}, on the ``AO Observer Display'' click on ``Abort
+Observation''. Wait a moment until everything stops. If it doesn't
+stop keep typing ``Abort Observation'' until it does.
+
+\item On {\it dataview's} galfa1 window 
+(the one which prints numbers all the time) 
+press Control-C, and exit from this window. 
+If you forget to do this, GALSPECT will take data
+all night!
+
+\item On {\it observer2}, on ``Observer's Interface'' click on 
+``Exit CIMA'' to exit from cima. Close all windows. 
+\end{enumerate}
+\end{enumerate}
+
+{\bf Thank you very much!}\\
+
+Josh et al
+
+\end{document}
+
+
+
+
+

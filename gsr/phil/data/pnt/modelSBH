@@ -1,0 +1,69 @@
+# 
+# sbh pointing model file
+# format is  az  za.  units are great circle arcseconds
+#   col 1
+#   #  - comment
+#   #!modelxx  yymmdd  start of model 
+#   blank  or number   current model data (N lines)
+#   #!       az  za    archived model data
+#!modelSBH15A  13 B enctbl15A  040513 model15
+# tur:125.94 ,scl:-.75 format B .. from 02may04 survey.
+#   -37.75    -80.55  constant used for verify
+   -44.09    -86.12  constant 20may04 from verify run
+    -6.05    -95.56  cos(az)
+    92.35     -4.13  sin(az)
+  -731.21    141.69  sin(za)
+ -1013.97    677.51  sin(za)**2
+   -24.53    -10.41  cos(3az)
+   -11.19     -7.71  sin(3az)
+     9.18    -10.39  sin(za-balance)*cos(3az)
+   106.04      0.08  sin(za-balance)*sin(3az)
+     3.02      0.43  cos(2az)
+    -1.74     -0.62  sin(2az)
+    -3.46      0.03  cos(6az)
+     1.29     -0.36  sin(6az)
+#
+#!modelSBH14A  13 B enctbl14A  030304 1
+# tur:125.55 ,scl:-.75 format B new tur pos from 14feb04 survey 
+# tur:125.827,scl:-.75 format B  
+#   -44.54    -79.26  constant same offsets model13 sbn
+#    -42.97    -80.90  const verify model 05mar03 add:1.57, -1.64
+#  -46.11    -77.62  10mar03 18:00 above offsets added backwards
+#   -48.71    -77.62  14feb04 new turret pos (from survey)
+#!   -48.71    -60.26  10apr04 track after kevlar tension 
+#!    -6.41   -100.92  cos(az)
+#!    99.16     -5.74  sin(az)
+#!  -713.84    175.81  sin(za)
+#! -1028.24    489.81  sin(za)**2
+#!   -22.20    -11.42  cos(3az)
+#!   -12.08     -7.80  sin(3az)
+#!     7.31      4.00  sin(za-balance)*cos(3az)
+#!   111.56      1.25  sin(za-balance)*sin(3az)
+#!     2.49      0.43  cos(2az)
+#!    -0.69     -0.42  sin(2az)
+#!    -1.93     -0.30  cos(6az)
+#!     0.91     -0.19  sin(6az)
+#
+#!modelSBH13A  13 B enctbl13A  020206 14:00 after first pnt run.
+# tur:125.827,scl:-.75 format B  ..03apr02 got survey offsets correct
+# tur:125.75 ,scl:-.75 format B  .. from turret swings
+# tur:124.15 ,scl:-.75 format B  .. from horn survey 
+# tur:125.00 ,scl:-.75 format B  ..22mar02->31mar02
+#
+#   -39.29    -98.35  constant these are the sbn offsets..
+#   -106.29    -98.35  constant 31mar02 -37" turret move,-30" 22mar02 src
+#    -38.79   -98.35  constant 02par02 +67.5 from 01apr02 turswing data. 
+#   -62.52   -98.35  constant 02apr02 -23.73 after J2021+233, before foc curve
+#!    -45.02   -98.35  constant 03apr02 +21. pnt 22apr02, -3.5 fix turret
+#!    -8.37    -99.44  cos(az)
+#!    97.29     -8.62  sin(az)
+#!   -951.44    320.43  sin(za) 16sep02 az enc jumped
+#!  -853.92   -420.45  sin(za)**2
+#!   -23.59    -10.84  cos(3az)
+#!   -13.42     -7.59  sin(3az)
+#!     9.46     -6.49  sin(za-balance)*cos(3az)
+#!   102.06     -0.90  sin(za-balance)*sin(3az)
+#!     3.13      0.20  cos(2az)
+#!    -1.85      0.49  sin(2az)
+#!    -2.09     -0.16  cos(6az)
+#!     0.74     -0.02  sin(6az)

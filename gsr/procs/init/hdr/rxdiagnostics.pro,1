@@ -1,0 +1,99 @@
+
+pro rxdiagnostics, mh, ccf, acf, rmsratio, smoothtime=smoothtime, nb=nb
+
+;+
+;get ccf matrix for the wb and nb powers to chk for rcvr mixups.
+;do for wb unless nb is set.
+;-
+
+if keyword_set( smoothtime) eq 0 then smoothtime=19;
+
+;RESTRICT TO NONCAL SPECTRA...
+ndata= n_elements( mh) 
+IF ( NDATA LT 4) THEN BEGIN
+ccf= fltarr( 14, 14)
+return
+ENDIF
+
+acf= fltarr( 128, 14)
+
+;DEFINE PP, PWR ARRAYS INCLUDING ALL DATA...
+if keyword_set( nb) then pp= mh.pwr_nb else pp= mh.pwr_wb
+pp= reform( pp, 14, ndata)
+
+;DEFINE PPP, THE SET OF PP NOT IN CALS...
+indx= indgen( ndata)
+indxr= where( strtrim(mh.obsmode,2) ne 'SMARTF' and $
+             strtrim(mh.obsmode,2) ne 'CAL', nindx)
+if (nindx ne 0) then begin indx=indxr & ndata= nindx & endif
+ppp= pp[*, indx]
+
+;;DO A MEDIAN FILTER TO SUBTRACT OFF LARGE SCALE DRIFTS...CORRELATE THEM...
+;pppmod= ppp
+;for nr=0,13 do $
+;  pppmod[ nr,*]= ppp[ nr,*]-median( reform(ppp[ nr,*]),smoothtime)
+;;GET CROSS CORRELATION MATRIX...
+;ccf= correlate( pppmod)
+
+;GET PPPA WITH OUR FANCY TECHNIQUE...
+fctr= total(ppp,2)
+fctr=fctr/mean(fctr)
+pppa=ppp
+for nr=0,13 do pppa[nr,*]=pppa[nr,*]/fctr[nr]
+;DONT INCLUDE POINTS WHERE THE MEAN DIFFERS MUCH FROM ZERO...
+pppamean= total(pppa,1)/14.
+;SUBTRACT THE MEAN FROM EVERYTHING TO HELP GET RID OF INTERFERENCE...
+for nr=0,13 do pppa[nr,*]=pppa[nr,*]-pppamean
+
+;FOR CCF CALCS, INCLUDE ONLY THOSE PLACES WHERE THE MEAN IS 'FLAT'...
+xd= findgen( n_elements( pppamean))
+yd= pppamean
+polyfit_median, xd, yd, 1, coeffs, sigcoeffs, yfit
+resid=yd-yfit
+res=moment( resid, mdev=mdev)
+indx= where( abs( resid) lt 1.*mdev, count)
+;FINALLY, CALCULATE THE CCF FOR THESE HIGHLY SELECTED DATA
+if count gt 20 then ccf= correlate(pppa[*,indx]) else ccf=fltarr(14,14)
+
+;stop
+
+;GET RMS'S AND COMPARE TO AVG...
+rmsratio= fltarr( 14)
+FOR NR=0, 13 DO BEGIN
+mom= moment( ppp[ nr,*])
+rmsratio[ nr]= sqrt( mom[ 1])/mom[ 0]
+;mom= moment( pppmod[ nr,*])
+;rmsratio[ nr]= sqrt( mom[ 1])/mean( ppp[ nr,*])
+;plot, ppp[nr,*];;;, /ysty
+;stop, nr, mom[0], sqrt(mom[1])
+ENDFOR
+
+;--------------------------NOW DO THE ACF'S-----------------------
+; NEED TO RESTORE TIME COHERENCE, SO INSTEAD OF
+;USING SHORTER ARRAYS WE ZERO THE CAL RECORDS...
+;RESTRICT TO NONCAL SPECTRA...
+;DEFINE  PWR ARRAYS INCLUDING ONLY NONCAL DATA...
+ndata= n_elements( mh) 
+
+;stop
+
+indxz= where( strtrim(mh.obsmode,2) eq 'SMARTF' or $
+              strtrim(mh.obsmode,2) eq 'CAL', nindxz)
+if (nindxz eq 0) then return
+
+pp[ *,indxz]= 0.
+
+;DO A MEDIAN FILTER TO SUBTRACT OFF LARGE SCALE DRIFTS...CORRELATE THEM...
+pmod= pp
+for nr=0,13 do $
+  pmod[ nr,*]= pp[ nr,*]-median( reform(pp[ nr,*]),smoothtime)
+
+length=128 < ndata-2
+lag= indgen( length)
+for nr=0,13 do acf[ 0:length-1,nr]= a_correlate( pmod[ nr,*], lag)
+
+return
+end
+
+
+

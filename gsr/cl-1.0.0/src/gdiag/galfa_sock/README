@@ -1,0 +1,60 @@
+
+Jeff Mock
+10/8/4
+
+
+Demo directory for talking to galfa over a TCP socket.
+
+The protocol is defined in galfa_sock.h, it is sort of 
+documented there as well.
+
+gtest is a perl program to test the protocol.
+
+ctest.c is a standalone C program (tested under linux but intended 
+to work with other unix-lines OSes and byte orders) to exercise
+the protocol.
+
+gtest-pdl is perl program to test the protocol and bring
+up a graphics window to show graphs and waterfalls of the
+spectrum data.  You need PDL and PGPLOT modules for perl
+for this to work. At naic you can take envrironment settings
+from mofongo:~jmock/.profile and run this program on 
+mofongo.
+
+For now, the model I'm using is that the controlling 
+computer needs to start the galfa application on the galfa
+box.  The galfa box is only listening on it's SSH port,
+so the application should be started with ssh, something
+like this.
+
+To just run galfa and have it listen for the socket (no
+vnc, no FITS file writing from galfa), start it like
+this:
+
+   % ssh -t -i g_key galfa@galfa1 gdiag -run -nofits
+
+Note that the ket file g_key needs to have permissions
+of 0400, but CVS might mangle this.
+
+If you want to be able to see diagnostic screens with VNC
+while attaching via a socket, start galfa like this:
+ 
+   % ssh -t -i g_key galfa@galfa1 gdiag -galfa -vnc -nofits
+
+You can optionally remove the "-nofits" option from either
+example and galfa will write its own FITS file while listening
+to the socket.  There is a possibility of running out of
+network bandwidth (or CPU cycles) if you try to do everything
+at the same time (sockets, vnc, FITS writing), so don't do
+more than you need or you might anger the gods.
+
+The ssh connection that runs the program will produce messages
+on occasion, this can be kept in a long or maybe in a 
+scrolling window for an operator.  The controlling program
+should need to parse these, the intent is that everything the 
+controlling program wants to know is sent over the socket
+interface.
+
+
+
+

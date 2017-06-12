@@ -1,0 +1,8 @@
+
+04NOV04 m1_hdr.pro modified to use sequence nr to calculate utc instead
+of assuming that its rounded value is correct.  not thoroughly checked. 
+the sequence nr wraps after 32000; i took care of this and checked with
+simulation but coldn't check it on real data. 
+
+03nov04 created
+

@@ -1,0 +1,47 @@
+#!/bin/sh
+
+# 
+# Jeff Mock
+# jeff@mock.com
+# (c) 2002
+# 11/25/2
+#
+# Get flash image using http.  Write image to partition not currently
+# used for root partition, verify partition using cramfsck, this
+# will verify CRC and directory structure.  
+#
+# After verifying new partition change active partition in MBR boot
+# sector and reboot machine.
+#
+
+URL="http://www.mock.com/cl/test/p1.img"
+TMP=/tmp/img
+BOOTPART=bootpart
+
+fail ()
+{
+    rm -rf ${TMP}
+    echo ""
+    echo "Update failed."
+    echo ""
+    exit 1
+}
+
+echo "Fetching new kernel and filesystem image"
+rm -rf ${TMP}                                       || fail
+wget ${URL} -q -O ${TMP}                            || fail
+cramfsck ${TMP}                                     || fail
+
+DEV=`${BOOTPART} -n`                                || fail
+echo "Writing to ${DEV}"
+dd if=${TMP} of=${DEV} bs=512 2> /dev/null          || fail
+
+echo "Verifying partition"
+cramfsck ${DEV} 2> /dev/null                        || fail
+${BOOTPART} -f                                      || fail
+
+UPDATES=`${BOOTPART} -u`                            || fail
+echo "${UPDATES} flash updates"
+echo "Rebooting"
+reboot                                              || fail
+

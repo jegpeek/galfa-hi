@@ -1,0 +1,13 @@
+\contentsline {section}{\numberline {1}INTRODUCTION}{2}
+\contentsline {section}{\numberline {2}SUMMARY OF IMPORTANT FINDINGS}{2}
+\contentsline {section}{\numberline {3}EXPLANATION OF THE PLOTS IN FIGURES 1\hbox {}, 2\hbox {}, and 3\hbox {}}{2}
+\contentsline {section}{\numberline {4}BEAM 0 SHOWS THAT THE FPN IS 100\% POLARIZED}{6}
+\contentsline {section}{\numberline {5}DEPENDENCE OF FPN ON ALFA TURRET ANGLE}{7}
+\contentsline {section}{\numberline {6}DEPENDENCE OF FPN ON FEED}{7}
+\contentsline {section}{\numberline {7}THE FPN STAYS FIXED IN SPACE WHEN WE ROTATE ALFA BY 60 DEGREES}{7}
+\contentsline {section}{\numberline {8}BEHAVIOR OF THE FPN WITH PLATFORM HEIGHT}{9}
+\contentsline {subsection}{\numberline {8.1}Plots of spectra---Kelvins versus frequency}{14}
+\contentsline {subsection}{\numberline {8.2}Plots of autocorrelation functions---Kelvins versus time delay}{14}
+\contentsline {section}{\numberline {9}ZA DEPENDENCE OF FPN}{17}
+\contentsline {section}{\numberline {10}AZ DEPENDENCE OF FPN}{17}
+\contentsline {section}{\numberline {11}FREQUENCY DEPENDENCE OF FPN}{17}

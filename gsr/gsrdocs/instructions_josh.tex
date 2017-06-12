@@ -1,0 +1,249 @@
+\documentstyle[12pt,epsf]{article}
+\setlength{\textheight}{21.5cm}
+\setlength{\textwidth}{7in}
+\setlength{\topmargin}{-0.25in}
+\setlength{\oddsidemargin}{-0.25in}
+\setlength{\evensidemargin}{0mm}
+\setlength{\parindent}{0em}
+\setlength{\headsep}{10.0mm}
+
+\def\baselinestretch{1.0}
+\pagestyle{myheadings}
+\def\kms{km~s$^{-1}$}
+
+\begin{document}
+\parskip 5pt
+\begin{center}
+  {\Large \bf Instructions for running a2011}
+
+\vspace{0.5cm} {\large Carl Heiles, Josh Goldston 
+(31 May 2005)\footnote{Adapted from
+``Instructions for running a2032'' by Snezana Stanimirovic (May 22 2005).}}
+\end{center}
+
+{\bf If you get started more than eight minutes late, please call Josh
+Goldston at 510 299 4427.}
+
+In case of any problems or concerns please call Josh Goldston at 510 299
+4427.  These are observations with ALFA and GALSPECT.  The observing
+procedure consists of running a calibration routine (called Smart
+Frequency Switching) and then making a map with basketweave scanning
+(the observing routine is called Basketweave Scanning). 
+
+%\Huge
+
+\noindent {\bf ********************************************************************* 
+
+MAKE SURE THE ALFA COVER IS OFF!!!
+
+\noindent *********************************************************************}
+
+%\normal
+
+There are four major parts to the process:
+\begin{enumerate}
+
+\item {\bf Starting CIMA and pointing the telescope}
+
+\item {\bf Starting GALSPECT}
+
+\item {\bf Running the calibration and observation}
+
+\item {\bf Stopping at the end of the run}
+\end{enumerate}
+
+
+Here we go:
+
+\begin{enumerate}
+
+\item {\bf Starting CIMA and pointing the telescope} \begin{enumerate}
+
+\item On {\it observer2} login as dtusr.
+
+\item Open an xterm and type {\bf cima}. If it asks which version, choose ``test''.
+
+\item On the center window entitled ``Welcome to CIMA'' enter your name
+and project number = a2011 (note ``a`` is lower case).  Then under
+``Select observing mode'' select ``Line''.
+
+\item A new window entitled ``Available Receivers'' pops up.  Click
+``ALFA'', click ``Disable Quick Tsys'', and then ``Select Receiver
+Now''.  This will start rotating the turret to ALFA.  Finally, click on
+``DISMISS'' to get rid of this window.
+
+\item On the ``Observers Interface'' window (upper left of screen) click
+on ``Command File Observing''.  
+
+\item A new window opens up near the upper right labelled ``Command
+File Observing''.  Click ``Command file''; a new window opens up
+entitled ``Select Command File''.  
+
+\item In this new ``Select Command File'' window you see a set of files
+displayed.  We have two files, a0part1 for pointing the telescope and
+setting things; and a0part2 for doing the calibration routines and the
+actual observations themselves.  Select {\bf a0part1} and then click on
+``Open''. 
+
+\item Return to the ``Command File Observing'' window near the upper
+right of the screen. Click ``Start Command Line Observation''.
+
+\item At this point look at the ``AO Observer Display'' window near the
+bottom right of the screen.  At the bottom left of this window the word
+``Observing'' should be highlighted in green.  Also, this window prints
+out a line every time it does something.  It should progress in a normal
+fashion.  
+
+The telescope should start driving to the source. 
+
+If there are any {\it red} messages, then there is a {\it problem}.  If so, call Josh
+Goldston at 510 299 4427. 
+
+\end{enumerate}
+
+\item {\bf Starting GALSPECT} \begin{enumerate}
+
+\item While the telescope is driving to the desired position, login to
+{\it dataview} as user ``guest'' (password is ``naic305m''). 
+
+\item On {\it dataview}, open an xterm; the prompt \verb%[guest@dataview
+guest]$% appears.  In this window, login to the {\it galfa1} computer by
+typing:
+
+{\bf ssh -i galfa\_key galfa$@$galfa1 }
+
+The prompt \verb$#$ appears, showing that this window is now a {\it
+galfa1} window. 
+
+\item In this same {\it galfa1} window type:
+{\bf ps $|$ grep gdiag }
+
+If it prints out anything, then type {\bf kill PID }, where PID is the first number.
+
+\item In the same {\it galfa1} window type:
+
+{\bf /var/diag }
+
+Let it run for some time, like 30 sec, you will see lots of messages,
+GALSPECT is warming up. Stop this by typing Control-C.
+
+\item Wait until the telescope gets on the source.  Then in the same
+{\it galfa1} window type:
+
+{\bf /var/levels }
+
+If this gives the message {\bf LO2: Set failed, got back: ERROR setting freq},
+follow the procedure in the footnote\footnote{1. Open up a new xterm on
+{\it dataview}. \\
+2. login to wappserv as user wapp (password=wappme) by typing {\bf ssh
+wapp@wappserv}. It will ask for the password: type {\bf wappme} .\\
+3. Type {\bf source /share/wappsrc/bin/start\_gpib} . \\
+4. Then return to the previous step where you type
+{\bf /var/levels} in the {\it galfa1} window.}.  Usually it will 
+write out a whole bunch of numbers. 
+The important ones to look at are the summary at the end. This consists
+of 28 RMS values, 4 for each beam. 
+A normal screen isn't big enough to display them all, so you have to
+scroll up to see them all.  These RMS values should all be near 10, say
+between 7 and 14 or so.  If they are not, try it again.  And again.  And
+again.  If the RMS values keep being wrong, then call Josh Goldston at
+510 299 4427. 
+
+\item FINALLY! We are set to observe. In the {\it galfa1} window type:
+
+{\bf /var/a2011}
+
+Again, note that the ``a'' is lowercase. Typing this starts GALSPECT and
+it will begin to write data files. Also, every 5 seconds it will write
+the number of seconds elapsed on the {\it galfa1} window.
+
+\end{enumerate}
+\item {\bf Running the calibration and observation} \begin{enumerate}
+
+\item Return to cima on {\it observer2}.  In the upper right window
+labeled ``Command File Observing'' again click ``Command file''; a new
+window opens up entitled ``Select Command File''. 
+
+\item This time select select {\bf a0part2} and then click on
+``Open''. 
+
+\item Return to the ``Command File Observing'' window near the upper
+right of the screen. It has expanded horizontally and you'll have to
+drag it to the left to see it all. Click ``Start Command Line Observation''.
+
+\item The first action is a calibration, which takes a few minutes. This
+must finish before the telescope starts moving, so we try to leave
+plenty of time.  As a result the telescope might not start moving for
+several minutes; this is not a problem. 
+
+\item {Optional step during observing: HAPPY BIRTHDAY!!} 
+
+	At any time during observing you can view data using GALSPECT's
+display: \begin{enumerate}
+
+\item Open a new xterm on {\it dataview} and type:
+
+{\bf vncviewer galfa1} 
+
+This brings up a {\it plot window} entitled ``TightVNC: Pixmap framebuffer''.
+
+\item Move the cursor onto this {\it plot window}, type ``a'' three times.
+
+\item With the cursor to this plot window and type ``h'' once.
+
+\item With the cursor on this plot window, type ``L'' in UPPERCASE.
+
+
+\item At this point you should see seven plots, one for each of ALFA's
+beams.  Each plot has two graphs, one yellow and one green.  They should
+look similar, like a flat-topped {\it lemon-lime birthday cake} viewed
+from the side (yum-yum!).  In the very center should be a narrow 21-cm
+line with height about the same as that of the cake; regard the line as
+a birthday candle in the very center of the cake.  (During the
+calibration the candle moves around and sometimes disappears.)
+
+	If you don't like the birthday cake, or if you are getting
+bored, you can change the display by typing various combinations of
+``a'', ``h'', and ``L''. {\it But whatever you do, DON'T TYPE w OR x}
+because this will make big changes in the GALSPECT configuration.
+
+	These plots should continually update once per second. If this
+doesn't happen, then call Josh Goldston at 510 299 4427. 
+
+\item The G-ALFA notebook in the control room has more details on GALSPECT
+operation. 
+
+\end{enumerate}
+\end{enumerate}
+
+
+---------------------------------  much time passes observing  ----------------------------------
+
+\item {\bf Stopping at the end of the run} \begin{enumerate}
+
+\item On {\it observer2}, on the ``AO Observer Display'' click ``Abort
+Observation''. Wait a moment until everything stops. If it doesn't stop,
+keep typing ``Abort observation'' until it does.
+
+\item On {\it dataview}'s {\it galfa1} window (the
+one which prints numbers all the time) press Control-C. This should stop
+GALSPECT. If it doesn't, keep hitting Control-C.
+
+\item On {\it observer2}, on the ``Observers Interface'' window, click ``Exit
+Normally'' to exit from CIMA. 
+
+\end{enumerate}
+
+
+\end{enumerate}
+
+{\bf Thank you very much!}
+
+Carl and Josh
+
+\end{document}
+
+
+
+
+

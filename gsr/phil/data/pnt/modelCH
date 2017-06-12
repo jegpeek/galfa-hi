@@ -1,0 +1,54 @@
+# pointing model file for CH 971103
+# format is:
+# # comment, 
+# #!modelXX hdr for model, 
+# #! num num  archived data for model
+#    num num  current dat for model
+#  hdr line for model:
+# #!modelXX numcoef format encTbl date
+# units are great circle arcseconds
+#
+#!modelCH7 13 B enctblch 990629   update for lat change..cosaz,sinaz terms
+#   7.4	 -97.1	offsets           lat changed 18dec98. but forgot to update
+#   5.4	  66.1	cosAz             ch model.
+#  -49.1  14.3	sinAz
+    7.4	 -97.1	offsets
+    5.4	 104.1	cosAz lat change 18 20 36.6->18 21 14.2
+   -87.1  14.3	sinAz long. 04h 27m   .793s->04h 27m   .720
+#   355.0 321.7	sinZa .. use 38" as change. should have been installed
+#						 18dec92 but forgot
+  -1091.0 321.7	sinZa .. 25sep02 added -1446 for az jump 
+0.	  0.   
+0.	  0.                            
+0.	  0.						 
+0.	  0.
+0.	  0.
+0.	  0.
+0.	  0.
+0.	  0.
+0.	  0.
+#!modelCH7A 13 B enctblch 980210   original model in model7 format thru 29jun99
+#!  7.4	 -97.1		offsets
+#!  5.4	  66.1		cosAz
+#! -49.1	  14.3		sinAz
+#! 355.0	 321.7		sinZa
+#!0.	  0.
+#!0.	  0.
+#!0.	  0.
+#!0.	  0.
+#!0.	  0.
+#!0.	  0.
+#!0.	  0.
+#!0.	  0.
+#!0.	  0.
+#!modelCH 4 M none 971103   original model
+#!  7.4	 -97.1		offsets
+#!  5.4	  66.1		cosAz
+#! -49.1	  14.3		sinAz
+#! 355.0	 321.7		sinZa
+#!0.	  0.
+#!0.	  0.
+#!0.	  0.
+#!0.	  0.
+#!0.	  0.
+#!0.	  0.
