@@ -12,4 +12,10 @@ directory and the files it contains. Those files are large and can be found here
 
 This pipeline is provided for completeness; one should not expect to be able to run it just from this repository.
 
-Please note that open source software originating elsewhere is included in this repository for repeatability and completeness. It is not covered by the license associated with this repository. 
+The LICENSE.txt file applies only to 
+
+```gsr/gsrdocs```
+```gsr/procs```
+```gsr/cl-1.0.0```
+
+Open source software originating elsewhere is included in this repository for repeatability and completeness. It is not covered by  LICENSE.txt. 
