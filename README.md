@@ -14,8 +14,10 @@ This pipeline is provided for completeness; one should not expect to be able to 
 
 The LICENSE.txt file applies only to 
 
-```gsr/gsrdocs```
-```gsr/procs```
-```gsr/cl-1.0.0```
+```galfa-hi/gsr/gsrdocs```
+
+```galfa-hi/gsr/procs```
+
+```galfa-hi/gsr/cl-1.0.0```
 
 Open source software originating elsewhere is included in this repository for repeatability and completeness. It is not covered by  LICENSE.txt. 
