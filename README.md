@@ -4,7 +4,7 @@ This is the software used to reduce the data presented in GALFA-HI Data Release 
 
 To run this software through all the steps, you will need the 
 
-```galfa/gsr/savfiles```
+```galfa-hi/gsr/savfiles```
 
 directory and the files it contains. Those files are large and can be found here:
 
