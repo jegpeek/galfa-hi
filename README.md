@@ -1,6 +1,8 @@
 ### GALFA-HI Standard Reduction Software
 
-This is the software used to reduce the data presented in GALFA-HI Data Release 2. 
+This is the software used to reduce the data described in _The GALFA-HI Survey Data Release 2_ presented in the Astrophysical Journal Supplement, available at https://doi.org/10.3847/1538-4365/aa91d3 
+
+
 
 To run this software through all the steps, you will need the 
 
